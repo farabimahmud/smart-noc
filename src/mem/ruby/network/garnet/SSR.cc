@@ -28,11 +28,10 @@
  */
 
 
-#ifndef __MEM_RUBY_NETWORK_GARNET_0_CREDITLINK_HH__
-#define __MEM_RUBY_NETWORK_GARNET_0_CREDITLINK_HH__
+#include "mem/ruby/network/garnet/SSR.hh"
 
-#include "mem/ruby/network/garnet/NetworkLink.hh"
-#include "params/CreditLink.hh"
+#include "base/intmath.hh"
+#include "debug/RubyNetwork.hh"
 
 namespace gem5
 {
@@ -43,18 +42,20 @@ namespace ruby
 namespace garnet
 {
 
-
-class CreditLink : public NetworkLink
+// Constructor for the flit
+SSR::SSR(int vnet, int src_hops, bool bypass_req,
+        PortDirection outport_dirn, flit * ref_flit, 
+        Cycles curTime)
 {
-  public:
-    typedef CreditLinkParams Params;
-    CreditLink(const Params &p) : NetworkLink(p) {}
-    void wakeup();
-    ~CreditLink();
-};
+    m_vnet = vnet;
+    m_src_hops = src_hops;
+    m_bypass_req = bypass_req;
+    m_outport_dirn = outport_dirn; 
+    m_ref_flit = ref_flit; 
+    m_time = curTime; 
+
+}
 
 } // namespace garnet
 } // namespace ruby
 } // namespace gem5
-
-#endif // __MEM_RUBY_NETWORK_GARNET_0_CREDITLINK_HH__

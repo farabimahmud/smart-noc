@@ -56,7 +56,8 @@ class RoutingUnit
     int outportCompute(RouteInfo route,
                       int inport,
                       PortDirection inport_dirn);
-
+    int getInportIdx(PortDirection dirn) { return m_inports_dirn2idx[dirn]; }
+    int getOutportIdx(PortDirection dirn) { return m_outports_dirn2idx[dirn]; }
     // Topology-agnostic Routing Table based routing (default)
     void addRoute(std::vector<NetDest>& routing_table_entry);
     void addWeight(int link_weight);

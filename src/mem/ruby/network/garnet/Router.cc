@@ -110,6 +110,7 @@ Router::addInPort(PortDirection inport_dirn,
     input_unit->set_in_link(in_link);
     input_unit->set_credit_link(credit_link);
     in_link->setLinkConsumer(this);
+    in_link->setLinkConsumerInport(input_unit);
     in_link->setVcsPerVnet(get_vc_per_vnet());
     credit_link->setSourceQueue(input_unit->getCreditQueue(), this);
     credit_link->setVcsPerVnet(get_vc_per_vnet());
@@ -289,6 +290,96 @@ Router::functionalWrite(Packet *pkt)
     }
 
     return num_functional_writes;
+}
+
+void
+Router::insertSSR(PortDirection inport_dirn, SSR* t_ssr)
+{
+    DPRINTF(RubyNetwork, "Router %d Inport %s received SSR from src_hops %d for bypass = %d for Outport %s\n",
+            get_id(), inport_dirn, t_ssr->get_src_hops(), t_ssr->get_bypass_req(), t_ssr->get_outport_dirn());
+
+    int inport = routingUnit.getInportIdx(inport_dirn);
+    int outport = routingUnit.getOutportIdx(t_ssr->get_outport_dirn());
+
+    t_ssr->set_inport(inport);
+
+    // Update SSR if dest bypass enabled
+    if (t_ssr->get_src_hops() > 0 && !t_ssr->get_bypass_req()) {
+        // dest or turning router
+        RouteInfo route = t_ssr->get_ref_flit()->get_route();
+        bool is_dest = (route.dest_router == m_id);
+
+        if (get_net_ptr()->isSMARTdestBypass() && is_dest) {
+            outport = routingUnit.lookupRoutingTable(route.vnet, route.net_dest);
+            PortDirection outport_dirn = m_output_unit[outport]->get_direction();
+
+            t_ssr->set_outport_dirn(outport_dirn);
+            t_ssr->set_bypass_req(true);
+        } else {
+            delete t_ssr;
+            return;
+        }
+    }
+    m_output_unit[outport]->insertSSR(t_ssr);
+}
+
+bool
+Router::smart_vc_select(int inport, int outport, flit *t_flit)
+{
+    // VC Selection
+    int vnet = t_flit->get_vnet();
+    bool has_free_vc = m_output_unit[outport]->has_free_vc(vnet);
+    if (!has_free_vc)
+        return false;
+
+    // Update VC in flit
+    int invc = t_flit->get_vc();
+    int outvc = m_output_unit[outport]->select_free_vc(vnet);
+    t_flit->set_vc(outvc);
+    m_output_unit[outport]->decrement_credit(outvc);
+
+    // Send credit for VCid flit came with
+    // Verify input VC is free and IDLE
+    assert(!(m_input_unit[inport]->isReady(invc, curCycle())));
+    assert(m_input_unit[inport]->is_vc_idle(invc));
+
+    // Send credit for VCid flit came with
+    m_input_unit[inport]->increment_credit(invc, true, curCycle());
+
+    return true;
+}
+void
+Router::smart_route_update(int inport, int outport, flit* t_flit)
+{
+    // Update route in flit
+    // Call route_compute so that x_hops/y_hops decremented
+    int check_outport = route_compute(t_flit->get_route(),
+        inport, m_input_unit[inport]->get_direction());
+    assert(check_outport == outport);
+    t_flit->set_outport(outport);
+}
+
+bool
+Router::try_smart_bypass(int inport, PortDirection outport_dirn, flit *t_flit)
+{
+    int outport = routingUnit.getOutportIdx(outport_dirn);
+
+    // Update VC
+    bool has_vc = smart_vc_select(inport, outport, t_flit);
+    if (!has_vc)
+        return false;
+
+    // Update Route
+    smart_route_update(inport, outport, t_flit);
+
+    DPRINTF(RubyNetwork, "Router %d Inport %s and Outport %d successful SMART Bypass for Flit %s\n",
+            get_id(), getPortDirectionName(m_input_unit[inport]->get_direction()), outport_dirn, *t_flit);
+
+    // Add flit to output link
+    m_output_unit[outport]->smart_bypass(t_flit);
+    t_flit->increment_hops(); // for stats
+
+    return true;
 }
 
 } // namespace garnet

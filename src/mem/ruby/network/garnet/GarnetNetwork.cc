@@ -36,6 +36,7 @@
 #include "base/cast.hh"
 #include "base/compiler.hh"
 #include "debug/RubyNetwork.hh"
+#include "debug/smart.hh"
 #include "mem/ruby/common/NetDest.hh"
 #include "mem/ruby/network/MessageBuffer.hh"
 #include "mem/ruby/network/garnet/CommonTypes.hh"
@@ -45,6 +46,7 @@
 #include "mem/ruby/network/garnet/NetworkLink.hh"
 #include "mem/ruby/network/garnet/Router.hh"
 #include "mem/ruby/system/RubySystem.hh"
+#include "mem/ruby/network/garnet/SSR.hh"
 
 namespace gem5
 {
@@ -101,9 +103,18 @@ GarnetNetwork::GarnetNetwork(const Params &p)
         m_nis.push_back(ni);
         ni->init_net_ptr(this);
     }
-
+    
     // Print Garnet version
-    inform("Garnet version %s\n", garnetVersion);
+    // inform("Garnet version %s\n", garnetVersion);
+    m_enable_smart = p.enable_smart;
+    m_smart_hpcmax = p.smart_hpcmax;
+    m_smart_dest_bypass = p.smart_dest_bypass;
+    if (m_enable_smart){
+        DPRINTF(smart, "SMART is enabled with hpcmax %d"
+            " and dest bypass %d\n",
+            m_smart_hpcmax, m_smart_dest_bypass);
+    }
+    
 }
 
 void
@@ -516,6 +527,15 @@ GarnetNetwork::regStats()
             statistics::oneline)
         ;
 
+    //    statistics::Scalar m_total_smart_hops;
+    // statistics::Formula m_avg_smart_hops;
+    // statistics::Formula m_avg_hpc; 
+
+    m_avg_smart_hops.name(name() + ".average_smart_hops");
+    m_avg_smart_hops = m_total_smart_hops / sum(m_flits_received);
+    m_avg_hpc.name(name()+".average_hpc");
+    m_avg_hpc = m_total_hops/m_total_smart_hops; 
+
     // Traffic distribution
     for (int source = 0; source < m_routers.size(); ++source) {
         m_data_traffic_distribution.push_back(
@@ -621,6 +641,73 @@ GarnetNetwork::functionalWrite(Packet *pkt)
     }
 
     return num_functional_writes;
+}
+
+
+// SMART NoC
+void
+GarnetNetwork::sendSSR(int src, PortDirection outport_dirn, int req_hops,
+                       SSR* t_ssr)
+{
+    //int src_x = src % m_num_cols;
+    int src_y = src / m_num_cols;
+
+    // Send SSR up to req_hops - 1 with bypass_req = true;
+    for (int hops = 1; hops <= req_hops; hops++) {
+
+        bool bypass_req = true;
+        if (hops == req_hops)
+            bypass_req = false;
+
+        if (outport_dirn == "East") {
+            int dst = src + hops;
+            if (dst / m_num_cols == src_y) {
+                // valid dst on same row
+
+                insertSSR(dst, "West", hops, bypass_req, t_ssr);
+            }
+        } else if (outport_dirn == "West") {
+            int dst = src - hops;
+            if (dst > 0 && dst / m_num_cols == src_y) {
+                // valid dst on same row
+
+                insertSSR(dst, "East", hops, bypass_req, t_ssr);
+            }
+        } else if (outport_dirn == "North") {
+            int dst = src + m_num_cols * hops;
+            if (dst / m_num_cols < m_num_rows) {
+                // valid dst
+
+                insertSSR(dst, "South", hops, bypass_req, t_ssr);
+            }
+        } else if (outport_dirn == "South") {
+            int dst = src - m_num_cols * hops;
+            if (dst / m_num_cols > 0) {
+                // valid dst
+
+                insertSSR(dst, "North", hops, bypass_req, t_ssr);
+            }
+        } else {
+            assert(0);
+        }   
+    }
+
+    // insertSSR makes a copy of the SSR for every dest
+    delete t_ssr;
+}
+
+void        
+GarnetNetwork::insertSSR(int dst, PortDirection inport_dirn, 
+                         int src_hops, bool bypass_req, SSR* orig_ssr)
+{
+    SSR *t_ssr = new SSR(orig_ssr->get_vnet(),
+                         src_hops,
+                         bypass_req,
+                         orig_ssr->get_outport_dirn(),
+                         orig_ssr->get_ref_flit(),
+                         orig_ssr->get_time());
+
+    m_routers[dst]->insertSSR(inport_dirn, t_ssr);
 }
 
 } // namespace garnet

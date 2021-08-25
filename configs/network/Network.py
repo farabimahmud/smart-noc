@@ -71,6 +71,22 @@ def define_options(parser):
             0: weight-based table
             1: XY (for Mesh. see garnet/RoutingUnit.cc)
             2: Custom (see garnet/RoutingUnit.cc""")
+
+    parser.add_argument(
+        "--enable-smart", action="store_true", default=False,
+        help="Enable SMART"
+    )
+
+    parser.add_argument(
+        "--smart_hpcmax", type=int, default=4,
+        help="HPCMax for SMART"
+    )
+
+    parser.add_argument(
+        "--smart_dest_bypass", action="store_true",default=False,
+        help="Enable SMART Destination bypass"
+    )
+
     parser.add_argument(
         "--network-fault-model", action="store_true",
         default=False,
@@ -121,6 +137,9 @@ def init_network(options, network, InterfaceClass):
         network.ni_flit_size = options.link_width_bits / 8
         network.routing_algorithm = options.routing_algorithm
         network.garnet_deadlock_threshold = options.garnet_deadlock_threshold
+        network.enable_smart = options.enable_smart
+        network.smart_hpcmax = options.smart_hpcmax
+        network.smart_dest_bypass = options.smart_dest_bypass
 
         # Create Bridges and connect them to the corresponding links
         for intLink in network.int_links:

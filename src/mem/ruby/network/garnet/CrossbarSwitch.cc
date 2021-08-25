@@ -87,6 +87,11 @@ CrossbarSwitch::wakeup()
             m_router->getOutputUnit(outport)->insert_flit(t_flit);
             switch_buffer.getTopFlit();
             m_crossbar_activity++;
+
+            if (t_flit->get_route().dest_router != m_router->get_id()){
+                t_flit->increment_hops();
+                t_flit->increment_smart_hops();
+            }
         }
     }
 }

@@ -28,11 +28,16 @@
  */
 
 
-#ifndef __MEM_RUBY_NETWORK_GARNET_0_CREDITLINK_HH__
-#define __MEM_RUBY_NETWORK_GARNET_0_CREDITLINK_HH__
+#ifndef __MEM_RUBY_NETWORK_GARNET_0_SSR_HH__
+#define __MEM_RUBY_NETWORK_GARNET_0_SSR_HH__
 
-#include "mem/ruby/network/garnet/NetworkLink.hh"
-#include "params/CreditLink.hh"
+#include <cassert>
+#include <iostream>
+
+#include "base/types.hh"
+#include "mem/ruby/network/garnet/CommonTypes.hh"
+#include "mem/ruby/network/garnet/GarnetNetwork.hh"
+#include "mem/ruby/network/garnet/flit.hh"
 
 namespace gem5
 {
@@ -43,18 +48,57 @@ namespace ruby
 namespace garnet
 {
 
-
-class CreditLink : public NetworkLink
+class SSR
 {
   public:
-    typedef CreditLinkParams Params;
-    CreditLink(const Params &p) : NetworkLink(p) {}
-    void wakeup();
-    ~CreditLink();
+    SSR() {}
+    SSR(int vnet, int src_hops, bool bypass_req,
+        PortDirection outport_dirn, flit * ref_flit,
+        Cycles curTime
+        );
+
+    virtual ~SSR(){};
+
+    int get_vnet() {return m_vnet;}
+    int get_src_hops() {return m_src_hops;}
+    bool get_bypass_req() {return m_bypass_req;}
+    
+    void set_bypass_req(bool x){
+        m_bypass_req =x; 
+    }
+    
+    void set_inport(int inport){
+        m_inport = inport;
+    }
+
+    int get_inport() {return m_inport;}
+
+    PortDirection get_outport_dirn() {
+        return m_outport_dirn;
+    }
+
+    void set_outport_dirn(PortDirection outport){
+        m_outport_dirn = outport; 
+    }
+
+    flit * get_ref_flit() {return m_ref_flit;}
+    Cycles get_time() {return m_time;}
+    void set_time(Cycles x) {
+        m_time = x; 
+    }
+
+
+    int m_vnet;
+    int m_src_hops;
+    bool m_bypass_req; 
+    int m_inport;
+    PortDirection m_outport_dirn;
+    flit * m_ref_flit;
+    Cycles m_time;
 };
 
 } // namespace garnet
 } // namespace ruby
 } // namespace gem5
 
-#endif // __MEM_RUBY_NETWORK_GARNET_0_CREDITLINK_HH__
+#endif // __MEM_RUBY_NETWORK_GARNET_0_SSR_HH__

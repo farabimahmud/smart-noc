@@ -34,8 +34,9 @@
 
 #include "base/trace.hh"
 #include "debug/RubyNetwork.hh"
+#include "debug/smart.hh"
 #include "mem/ruby/network/garnet/CreditLink.hh"
-
+#include "mem/ruby/network/garnet/InputUnit.hh"
 namespace gem5
 {
 
@@ -44,6 +45,8 @@ namespace ruby
 
 namespace garnet
 {
+
+
 
 NetworkLink::NetworkLink(const Params &p)
     : ClockedObject(p), Consumer(this), m_id(p.link_id),
@@ -64,6 +67,12 @@ void
 NetworkLink::setLinkConsumer(Consumer *consumer)
 {
     link_consumer = consumer;
+}
+
+void
+NetworkLink::setLinkConsumerInport(InputUnit* inport)
+{
+    link_consumer_inport = inport;
 }
 
 void
@@ -98,10 +107,24 @@ NetworkLink::wakeup()
                 (mVnets.size() == 0));
         }
         t_flit->set_time(clockEdge(m_latency));
-        linkBuffer.insert(t_flit);
-        link_consumer->scheduleEventAbsolute(clockEdge(m_latency));
+        // linkBuffer.insert(t_flit);
+        // link_consumer->scheduleEventAbsolute(clockEdge(m_latency));
         m_link_utilized++;
         m_vc_load[t_flit->get_vc()]++;
+
+        bool router_bypass = false;
+        if (m_type == INT_){
+            DPRINTF(smart, "Router with this link is %#x\n", link_consumer_inport->get_router());
+            if (link_consumer_inport->get_router()->get_net_ptr()->isSMART()){
+                t_flit->set_time(curCycle());
+                router_bypass = link_consumer_inport->try_smart_bypass(t_flit);
+            }            
+        }
+        if (!router_bypass){
+            t_flit->set_time(clockEdge(m_latency));
+            linkBuffer.insert(t_flit);
+            link_consumer->scheduleEventAbsolute(clockEdge(m_latency));            
+        }
     }
 
     if (!link_srcQueue->isEmpty()) {

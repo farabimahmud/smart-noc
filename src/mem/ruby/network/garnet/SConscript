@@ -50,3 +50,7 @@ Source('flitBuffer.cc')
 Source('flit.cc')
 Source('Credit.cc')
 Source('NetworkBridge.cc')
+Source('SSR.cc')
+Source('CreditLink.cc')
+
+DebugFlag('smart')

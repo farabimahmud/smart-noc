@@ -175,6 +175,7 @@ NetworkInterface::incrementStats(flit *t_flit)
 
     // Hops
     m_net_ptr->increment_total_hops(t_flit->get_route().hops_traversed);
+    m_net_ptr->increment_total_smart_hops(t_flit->get_route().smart_hops_traversed);
 }
 
 /*
@@ -432,8 +433,8 @@ NetworkInterface::flitisizeMessage(MsgPtr msg_ptr, int vnet)
 
         // initialize hops_traversed to -1
         // so that the first router increments it to 0
-        route.hops_traversed = -1;
-
+        route.hops_traversed = 0;
+        route.smart_hops_traversed = 0;         
         m_net_ptr->increment_injected_packets(vnet);
         m_net_ptr->update_traffic_distribution(route);
         for (int i = 0; i < num_flits; i++) {

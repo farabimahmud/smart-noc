@@ -34,6 +34,7 @@
 
 #include <iostream>
 #include <vector>
+#include <queue>
 
 #include "base/compiler.hh"
 #include "mem/ruby/common/Consumer.hh"
@@ -105,6 +106,12 @@ class OutputUnit : public Consumer
     }
 
     uint32_t functionalWrite(Packet *pkt);
+    // SMART NoC
+    void insertSSR(SSR *t_ssr);
+    bool isReadySSR();
+    SSR* getTopSSR();
+    void clearSSRreqs();
+    void smart_bypass(flit *t_flit);
 
   private:
     Router *m_router;
@@ -118,6 +125,22 @@ class OutputUnit : public Consumer
     flitBuffer outBuffer;
     // vc state of downstream router
     std::vector<OutVcState> outVcState;
+
+ 
+   // SMART
+   struct SSR_prio_local
+   {
+       bool operator()(const SSR *lhs, const SSR *rhs) const
+       {
+           if (lhs->m_time == rhs->m_time)
+               // reverse the following for prio_bypass
+               return lhs->m_src_hops > rhs->m_src_hops;
+           else
+               return lhs->m_time > rhs->m_time;
+       }
+   };
+   std::priority_queue<SSR*, std::vector<SSR*>, SSR_prio_local> ssr_reqs;
+   //std::priority_queue<SSR*, std::vector<SSR*>, SSR_prio_local> ssr_grant;    
 };
 
 } // namespace garnet

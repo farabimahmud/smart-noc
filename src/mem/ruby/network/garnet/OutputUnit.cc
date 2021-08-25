@@ -132,7 +132,8 @@ OutputUnit::select_free_vc(int vnet)
 void
 OutputUnit::wakeup()
 {
-    if (m_credit_link->isReady(curTick())) {
+    int num_credits = 0; 
+    while (m_credit_link->isReady(curTick())) {
         Credit *t_credit = (Credit*) m_credit_link->consumeLink();
         increment_credit(t_credit->get_vc());
 
@@ -140,9 +141,9 @@ OutputUnit::wakeup()
             set_vc_state(IDLE_, t_credit->get_vc(), curTick());
 
         delete t_credit;
-
-        if (m_credit_link->isReady(curTick())) {
-            scheduleEvent(Cycles(1));
+        num_credits++;
+        if (num_credits > 1){
+            assert(num_credits == 2);
         }
     }
 }
@@ -164,6 +165,71 @@ OutputUnit::set_credit_link(CreditLink *credit_link)
 {
     m_credit_link = credit_link;
 }
+
+ 
+// SMART NoC
+void
+OutputUnit::insertSSR(SSR *t_ssr)
+{
+    ssr_reqs.push(t_ssr);
+
+    // Wake up Router next cycle for SA-G
+    m_router->schedule_wakeup(Cycles(1));
+}
+
+// Is there a valid SSR for this cycle
+bool
+OutputUnit::isReadySSR()
+{
+    // delete invalid SSRs
+    while (!ssr_reqs.empty()) {
+        SSR *t_ssr = ssr_reqs.top();
+        if (t_ssr->get_time() < m_router->curCycle()) {
+            ssr_reqs.pop();
+            delete t_ssr;
+        } else if (t_ssr->get_time() == m_router->curCycle())
+            return true;
+        else
+            break;
+    }
+
+    return false;
+}
+
+// Get highest priority SSR
+SSR*
+OutputUnit::getTopSSR()
+{
+    SSR *t_ssr = ssr_reqs.top();
+    ssr_reqs.pop();
+
+    return t_ssr;
+}
+
+// SSR has been granted
+// clear SSR request queue for this cycle
+void
+OutputUnit::clearSSRreqs()
+{
+    while (!ssr_reqs.empty()) {
+        SSR *t_ssr = ssr_reqs.top();
+        if (t_ssr->get_time() <= m_router->curCycle()) {
+            ssr_reqs.pop();
+            delete t_ssr;
+        } else {
+            break;
+        }
+    }
+}
+
+// Multi-hop bypass
+void
+OutputUnit::smart_bypass(flit *t_flit)
+{
+    outBuffer.insert(t_flit);
+    m_out_link->wakeup(); // wakeup this cycle
+}
+
 
 void
 OutputUnit::insert_flit(flit *t_flit)

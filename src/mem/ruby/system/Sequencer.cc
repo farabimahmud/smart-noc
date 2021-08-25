@@ -570,9 +570,9 @@ Sequencer::hitCallback(SequencerRequest* srequest, DataBlock& data,
                        const Cycles firstResponseTime,
                        const bool was_coalesced)
 {
-    warn_once("Replacement policy updates recently became the responsibility "
-              "of SLICC state machines. Make sure to setMRU() near callbacks "
-              "in .sm files!");
+    // warn_once("Replacement policy updates recently became the responsibility "
+    //           "of SLICC state machines. Make sure to setMRU() near callbacks "
+    //           "in .sm files!");
 
     PacketPtr pkt = srequest->pkt;
     Addr request_address(pkt->getAddr());

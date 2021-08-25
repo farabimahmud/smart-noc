@@ -32,6 +32,7 @@
 #define __MEM_RUBY_NETWORK_GARNET_0_COMMONTYPES_HH__
 
 #include "mem/ruby/common/NetDest.hh"
+#include "mem/ruby/network/Network.hh"
 
 namespace gem5
 {
@@ -70,6 +71,11 @@ struct RouteInfo
     int dest_ni;
     int dest_router;
     int hops_traversed;
+
+    int x_hops_remaining;
+    int y_hops_remaining;
+    PortDirection outport_dirn;
+    int smart_hops_traversed;
 };
 
 #define INFINITE_ 10000

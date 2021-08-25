@@ -1,6 +1,8 @@
 /*
- * Copyright (c) 2008 Princeton University
+ * Copyright (c) 2020 Advanced Micro Devices, Inc.
+ * Copyright (c) 2020 Inria
  * Copyright (c) 2016 Georgia Institute of Technology
+ * Copyright (c) 2008 Princeton University
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,11 +30,8 @@
  */
 
 
-#ifndef __MEM_RUBY_NETWORK_GARNET_0_CREDITLINK_HH__
-#define __MEM_RUBY_NETWORK_GARNET_0_CREDITLINK_HH__
-
 #include "mem/ruby/network/garnet/NetworkLink.hh"
-#include "params/CreditLink.hh"
+#include "mem/ruby/network/garnet/CreditLink.hh"
 
 namespace gem5
 {
@@ -43,18 +42,22 @@ namespace ruby
 namespace garnet
 {
 
+void
+CreditLink::wakeup(){
+    while(link_srcQueue->isReady(curCycle())){
+        flit * t_flit = link_srcQueue->getTopFlit();
+        t_flit->set_time(curCycle() + m_latency);
+        linkBuffer.insert(t_flit);
+        link_consumer->scheduleEventAbsolute(clockEdge(m_latency));
+        m_link_utilized++;
+        m_vc_load[t_flit->get_vc()]++;
+    }
+}
 
-class CreditLink : public NetworkLink
-{
-  public:
-    typedef CreditLinkParams Params;
-    CreditLink(const Params &p) : NetworkLink(p) {}
-    void wakeup();
-    ~CreditLink();
-};
+CreditLink::~CreditLink(){
+}
+
 
 } // namespace garnet
 } // namespace ruby
 } // namespace gem5
-
-#endif // __MEM_RUBY_NETWORK_GARNET_0_CREDITLINK_HH__

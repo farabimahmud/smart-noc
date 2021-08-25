@@ -273,8 +273,8 @@ class DataWrap : public InfoAccess
             "belong to any statistics::Group. Legacy stat is deprecated.";
         if (parent == nullptr && name != nullptr)
             warn(csprintf("`%s` is a legacy stat. %s", name, common_message));
-        else if (parent == nullptr)
-            warn_once("One of the stats is a legacy stat. " + common_message);
+        // else if (parent == nullptr)
+        //     warn_once("One of the stats is a legacy stat. " + common_message);
     }
 
     /**

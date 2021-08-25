@@ -85,7 +85,7 @@ InputUnit::wakeup()
         m_router->getBitWidth(), *t_flit);
         assert(t_flit->m_width == m_router->getBitWidth());
         int vc = t_flit->get_vc();
-        t_flit->increment_hops(); // for stats
+        // t_flit->increment_hops(); // for stats
 
         if ((t_flit->get_type() == HEAD_) ||
             (t_flit->get_type() == HEAD_TAIL_)) {
@@ -146,7 +146,7 @@ InputUnit::increment_credit(int in_vc, bool free_signal, Tick curTime)
 {
     DPRINTF(RubyNetwork, "Router[%d]: Sending a credit vc:%d free:%d to %s\n",
     m_router->get_id(), in_vc, free_signal, m_credit_link->name());
-    Credit *t_credit = new Credit(in_vc, free_signal, curTime);
+    Credit *t_credit = new Credit(in_vc, free_signal, curTime+ Cycles(1));
     creditQueue.insert(t_credit);
     m_credit_link->scheduleEventAbsolute(m_router->clockEdge(Cycles(1)));
 }
@@ -171,6 +171,76 @@ InputUnit::resetStats()
         m_num_buffer_writes[j] = 0;
     }
 }
+
+inline int InputUnit::get_inlink_id(){
+    return m_in_link->get_id();
+}
+
+
+
+// SMART NoC
+bool
+InputUnit::try_smart_bypass(flit *t_flit)
+{
+    // Check if router is setup for SMART bypass this cycle
+    DPRINTF(RubyNetwork, "Router %d Inport %s trying to bypass flit %s\n",
+                 m_router->get_id(), m_direction, *t_flit);
+
+//    PortDirection outport_dirn = t_flit->get_route()->outport_dirn;
+//    return m_router->try_smart_bypass(m_id, outport_dirn, t_flit);
+
+    // Check SSR Grant for this cycle
+
+    while (!ssr_grant.empty()) {
+        SSR *t_ssr = ssr_grant.top();
+        if (t_ssr->get_time() < m_router->curCycle()) {
+            ssr_grant.pop();
+            delete t_ssr;
+        } else if (t_ssr->get_time() == m_router->curCycle()) {
+            if (t_ssr->get_ref_flit() != t_flit) {
+                // (i) this flit lost arbitration to a local flit, or
+                // (ii) wanted to stop, and hence its SSR was not sent to
+                //      this router, and some other SSR won.
+
+                return false;
+            } else {
+
+                DPRINTF(RubyNetwork, "Router %d Inport %s Trying SMART Bypass for Flit %s\n",
+                        m_router->get_id(), m_direction, *t_flit);
+
+                // SSR for this flit won arbitration last cycle
+                // and wants to bypass this router
+                assert(t_ssr->get_bypass_req());
+                bool smart_bypass =
+                    m_router->try_smart_bypass(m_id,
+                                               t_ssr->get_outport_dirn(),
+                                               t_flit);
+
+                ssr_grant.pop();
+                delete t_ssr;
+
+                return smart_bypass;
+            }
+        } else {
+            break;
+        }
+    }
+
+    return false;
+}
+
+void
+InputUnit::grantSSR(SSR *t_ssr)
+{
+    DPRINTF(RubyNetwork, "Router %d Inport %s granted SSR for flit %d from src_hops %d for bypass = %d for Outport %s\n",
+            m_router->get_id(), m_direction, *(t_ssr->get_ref_flit()), t_ssr->get_src_hops(), t_ssr->get_bypass_req(), t_ssr->get_outport_dirn());
+
+    // Update valid time to next cycle
+    t_ssr->set_time(m_router->curCycle() + Cycles(1));
+    ssr_grant.push(t_ssr);
+}
+
+
 
 } // namespace garnet
 } // namespace ruby

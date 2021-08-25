@@ -58,6 +58,7 @@ namespace garnet
 {
 
 class flitBuffer;
+class CreditLink;
 
 class NetworkInterface : public ClockedObject, public Consumer
 {

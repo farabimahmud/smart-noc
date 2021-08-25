@@ -778,8 +778,8 @@ DRAMInterface::DRAMInterface(const DRAMInterfaceParams &_p)
     }
 
     // determine the dram actual capacity from the DRAM config in Mbytes
-    uint64_t deviceCapacity = deviceSize / (1024 * 1024) * devicesPerRank *
-                              ranksPerChannel;
+    // uint64_t deviceCapacity = deviceSize / (1024 * 1024) * devicesPerRank *
+    //                           ranksPerChannel;
 
     uint64_t capacity = 1ULL << ceilLog2(AbstractMemory::size());
 
@@ -787,10 +787,10 @@ DRAMInterface::DRAMInterface(const DRAMInterfaceParams &_p)
             AbstractMemory::size());
 
     // if actual DRAM size does not match memory capacity in system warn!
-    if (deviceCapacity != capacity / (1024 * 1024))
-        warn("DRAM device capacity (%d Mbytes) does not match the "
-             "address range assigned (%d Mbytes)\n", deviceCapacity,
-             capacity / (1024 * 1024));
+    // if (deviceCapacity != capacity / (1024 * 1024))
+    //     warn("DRAM device capacity (%d Mbytes) does not match the "
+    //          "address range assigned (%d Mbytes)\n", deviceCapacity,
+    //          capacity / (1024 * 1024));
 
     DPRINTF(DRAM, "Row buffer size %d bytes with %d bursts per row buffer\n",
             rowBufferSize, burstsPerRowBuffer);

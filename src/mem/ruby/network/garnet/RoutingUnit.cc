@@ -232,7 +232,23 @@ RoutingUnit::outportComputeXY(RouteInfo route,
     // already checked that in outportCompute() function
     assert(!(x_hops == 0 && y_hops == 0));
 
-    if (x_hops > 0) {
+    if (inport_dirn == "Local") {
+        // Initialize
+        route.x_hops_remaining = x_hops;
+        route.y_hops_remaining = y_hops;
+    } else if (inport_dirn == "West" || inport_dirn == "East") {
+        route.x_hops_remaining--;
+    } else if (inport_dirn == "North" || inport_dirn == "South") {
+        route.y_hops_remaining--;
+    } else {
+        assert(0);
+    }
+
+    if (x_hops == 0 && y_hops == 0) {
+        // lookup routing table for exact outport
+        route.outport_dirn = "Local";
+        return lookupRoutingTable(route.vnet, route.net_dest);
+    } else if (x_hops > 0) {
         if (x_dirn) {
             assert(inport_dirn == "Local" || inport_dirn == "West");
             outport_dirn = "East";

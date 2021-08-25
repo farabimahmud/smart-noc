@@ -42,7 +42,8 @@
 #include "mem/ruby/network/garnet/Router.hh"
 #include "mem/ruby/network/garnet/VirtualChannel.hh"
 #include "mem/ruby/network/garnet/flitBuffer.hh"
-
+#include "mem/ruby/network/garnet/SSR.hh"
+#include <queue>
 namespace gem5
 {
 
@@ -62,7 +63,11 @@ class InputUnit : public Consumer
     void print(std::ostream& out) const {};
 
     inline PortDirection get_direction() { return m_direction; }
-
+    inline bool
+    is_vc_idle(int vc)
+    {
+        return (virtualChannels[vc].get_state() == IDLE_);
+    }
     inline void
     set_vc_idle(int vc, Tick curTime)
     {
@@ -139,14 +144,14 @@ class InputUnit : public Consumer
         m_in_link = link;
     }
 
-    inline int get_inlink_id() { return m_in_link->get_id(); }
+    inline int get_inlink_id();
 
     inline void
     set_credit_link(CreditLink *credit_link)
     {
         m_credit_link = credit_link;
     }
-
+    GarnetNetwork* get_net_ptr() { return m_router->get_net_ptr(); }
     double get_buf_read_activity(unsigned int vnet) const
     { return m_num_buffer_reads[vnet]; }
     double get_buf_write_activity(unsigned int vnet) const
@@ -154,6 +159,10 @@ class InputUnit : public Consumer
 
     uint32_t functionalWrite(Packet *pkt);
     void resetStats();
+    // SMART NoC
+    void grantSSR(SSR *t_ssr);
+    bool try_smart_bypass(flit *t_flit);
+    Router* get_router() { return m_router;}
 
   private:
     Router *m_router;
@@ -166,7 +175,15 @@ class InputUnit : public Consumer
 
     // Input Virtual channels
     std::vector<VirtualChannel> virtualChannels;
-
+    // SMART
+    struct SSR_time
+    {
+        bool operator()(const SSR *lhs, const SSR *rhs) const
+        {
+                return lhs->m_time >= rhs->m_time;
+        }
+    };
+    std::priority_queue<SSR*, std::vector<SSR*>, SSR_time> ssr_grant;
     // Statistical variables
     std::vector<double> m_num_buffer_writes;
     std::vector<double> m_num_buffer_reads;

@@ -56,7 +56,7 @@ namespace garnet
 {
 
 class GarnetNetwork;
-
+class CreditLink; 
 class NetworkBridge: public CreditLink
 {
   public:

@@ -44,6 +44,8 @@ namespace ruby
 namespace garnet
 {
 
+class CreditLink;
+
 GarnetIntLink::GarnetIntLink(const Params &p)
     : BasicIntLink(p)
 {

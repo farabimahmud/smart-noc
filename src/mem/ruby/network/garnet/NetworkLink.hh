@@ -52,6 +52,7 @@ namespace garnet
 {
 
 class GarnetNetwork;
+class InputUnit;
 
 class NetworkLink : public ClockedObject, public Consumer
 {
@@ -62,6 +63,7 @@ class NetworkLink : public ClockedObject, public Consumer
 
     void setLinkConsumer(Consumer *consumer);
     void setSourceQueue(flitBuffer *src_queue, ClockedObject *srcClockObject);
+    void setLinkConsumerInport(InputUnit* inport);
     virtual void setVcsPerVnet(uint32_t consumerVcs);
     void setType(link_type type) { m_type = type; }
     link_type getType() { return m_type; }
@@ -87,18 +89,17 @@ class NetworkLink : public ClockedObject, public Consumer
     std::vector<int> mVnets;
     uint32_t bitWidth;
 
-  private:
+  protected:
     const int m_id;
     link_type m_type;
     const Cycles m_latency;
 
     ClockedObject *src_object;
-
+    InputUnit * link_consumer_inport; 
     // Statistical variables
     unsigned int m_link_utilized;
     std::vector<unsigned int> m_vc_load;
 
-  protected:
     uint32_t m_virt_nets;
     flitBuffer linkBuffer;
     Consumer *link_consumer;

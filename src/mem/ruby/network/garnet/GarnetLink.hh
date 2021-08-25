@@ -50,6 +50,7 @@ namespace ruby
 
 namespace garnet
 {
+  class CreditLink;
 
 class GarnetIntLink : public BasicIntLink
 {

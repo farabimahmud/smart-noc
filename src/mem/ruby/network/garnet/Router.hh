@@ -45,6 +45,7 @@
 #include "mem/ruby/network/garnet/RoutingUnit.hh"
 #include "mem/ruby/network/garnet/SwitchAllocator.hh"
 #include "mem/ruby/network/garnet/flit.hh"
+#include "mem/ruby/network/garnet/SSR.hh"
 #include "params/GarnetRouter.hh"
 
 namespace gem5
@@ -119,6 +120,25 @@ class Router : public BasicRouter, public Consumer
     int route_compute(RouteInfo route, int inport, PortDirection direction);
     void grant_switch(int inport, flit *t_flit);
     void schedule_wakeup(Cycles time);
+
+    // SMART NoC
+    struct SSR_prio_local
+    {
+        bool operator()(const SSR *lhs, const SSR *rhs) const
+        {
+            if (lhs->m_time == rhs->m_time)
+                // reverse the following for prio_bypass
+                return lhs->m_src_hops > rhs->m_src_hops;
+            else
+                return lhs->m_time > rhs->m_time;
+        }
+    };
+
+    void insertSSR(PortDirection inport_dirn, SSR* t_ssr);
+    bool try_smart_bypass(int inport, PortDirection outport_dirn, flit* t_flit);
+    bool smart_vc_select(int inport, int outport, flit* t_flit);
+    void smart_route_update(int inport, int outport, flit* t_flit);
+
 
     std::string getPortDirectionName(PortDirection direction);
     void printFaultVector(std::ostream& out);

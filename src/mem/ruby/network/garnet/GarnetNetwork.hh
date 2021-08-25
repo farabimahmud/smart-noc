@@ -38,6 +38,7 @@
 #include "mem/ruby/network/Network.hh"
 #include "mem/ruby/network/fault_model/FaultModel.hh"
 #include "mem/ruby/network/garnet/CommonTypes.hh"
+#include "mem/ruby/network/garnet/SSR.hh"
 #include "params/GarnetNetwork.hh"
 
 namespace gem5
@@ -56,6 +57,7 @@ class NetworkInterface;
 class Router;
 class NetworkLink;
 class CreditLink;
+class SSR;
 
 class GarnetNetwork : public Network
 {
@@ -67,6 +69,22 @@ class GarnetNetwork : public Network
     void init();
 
     const char *garnetVersion = "3.0";
+
+    // SMART
+    bool isSMART() { return m_enable_smart;}
+    bool isSMARTdestBypass()  {return m_smart_dest_bypass;}
+    int getHPCmax() {
+        return m_smart_hpcmax;
+    }
+
+    void increment_total_smart_hops(int smart_hops){
+        m_total_smart_hops += smart_hops;
+    }
+
+    void sendSSR(int src, PortDirection outport_dirn,
+            int req_hops, SSR * t_ssr);
+    void insertSSR(int dst, PortDirection inport_dirn, int src_hops,
+            bool bypass_req, SSR * orig_ssr);
 
     // Configuration (set externally)
 
@@ -165,7 +183,15 @@ class GarnetNetwork : public Network
     int m_routing_algorithm;
     bool m_enable_fault_model;
 
+    bool m_enable_smart;
+    int m_smart_hpcmax;
+    bool m_smart_dest_bypass;
+
     // Statistical variables
+
+    statistics::Scalar m_total_smart_hops;
+    statistics::Formula m_avg_smart_hops;
+    statistics::Formula m_avg_hpc;
     statistics::Vector m_packets_received;
     statistics::Vector m_packets_injected;
     statistics::Vector m_packet_network_latency;

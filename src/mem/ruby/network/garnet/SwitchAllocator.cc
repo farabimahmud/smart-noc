@@ -36,6 +36,7 @@
 #include "mem/ruby/network/garnet/InputUnit.hh"
 #include "mem/ruby/network/garnet/OutputUnit.hh"
 #include "mem/ruby/network/garnet/Router.hh"
+#include <algorithm>
 
 namespace gem5
 {
@@ -95,6 +96,7 @@ SwitchAllocator::wakeup()
 
     clear_request_vector();
     check_for_wakeup();
+    arbitrate_ssr();
 }
 
 /*
@@ -217,7 +219,74 @@ SwitchAllocator::arbitrate_outports()
                 output_unit->decrement_credit(outvc);
 
                 // flit ready for Switch Traversal
-                t_flit->advance_stage(ST_, curTick());
+                // t_flit->advance_stage(ST_, curTick());
+                GarnetNetwork *net_ptr = m_router->get_net_ptr();
+                if (net_ptr->isSMART()) {
+
+                    // Wait for one-cycle (for SA-G) before doing ST
+                    // Local SSR insertion guarantees router will wake up next cycle
+                    // and let flit do ST
+                    Cycles sag_delay = Cycles(1);
+
+                    // Prio = Local => Local flit guaranteed to do ST
+                    t_flit->advance_stage(ST_, m_router->curCycle() + sag_delay);
+                    t_flit->set_time(m_router->curCycle() + sag_delay);
+
+                    // Send SSR
+                    // SSR sent this cycle in the code to allow routers to
+                    // perform SA-G next cycle.
+                    // In reality, SSR + SA-G will happen in the same cycle
+
+                    // Local SSR (for self)
+                    auto m_output_unit = m_router->getOutputUnit(outport);
+                    auto m_input_unit = m_router->getInputUnit(inport);
+                    SSR *t_ssr = new SSR(t_flit->get_vnet(),
+                                    0, // 0 hops
+                                    false, // no bypass req
+                                    m_output_unit->get_direction(),
+                                    t_flit,
+                                    m_router->curCycle() + Cycles(1));
+
+                    m_router->insertSSR(m_input_unit->get_direction(), t_ssr);
+
+                    // SSRs to neighbors
+                    // number of hops to bypass
+                    RouteInfo route = t_flit->get_route();
+
+                    // XY Routing
+                    int hops_remaining = (route.x_hops_remaining > 0) ? 
+                                          route.x_hops_remaining :
+                                          route.y_hops_remaining;
+
+                    int hpc_max = net_ptr->getHPCmax();
+                    int req_hops = std::min(hops_remaining, hpc_max);
+
+                    if (req_hops > 0) {
+                    
+                        SSR* t_ssr = new SSR(t_flit->get_vnet(), req_hops,
+                            // arbitrary. SSR is replicated at every router
+                            // and actual value set
+                            true,
+                            m_output_unit->get_direction(),
+                            t_flit,
+                            m_router->curCycle() + Cycles(1)); // valid for next cycle
+                        DPRINTF(RubyNetwork,
+                        "Router %d Output port %s Sending SSR for hops = %d\n",
+                        m_router->get_id(),
+                        m_output_unit->get_direction(),
+                        req_hops);
+
+                        // SSR Traversal is magical right now
+                        net_ptr->sendSSR(m_router->get_id(),
+                                         m_output_unit->get_direction(),
+                                         req_hops, t_ssr);
+                    }
+
+                } else {
+                    DPRINTF(RubyNetwork, "Baseline NoC\n");
+                    t_flit->advance_stage(ST_, m_router->curCycle());
+                    t_flit->set_time(m_router->curCycle());
+                }                
                 m_router->grant_switch(inport, t_flit);
                 m_output_arbiter_activity++;
 
@@ -395,6 +464,37 @@ SwitchAllocator::resetStats()
     m_input_arbiter_activity = 0;
     m_output_arbiter_activity = 0;
 }
+
+// SMART NoC
+// SA-G Stage
+void
+SwitchAllocator::arbitrate_ssr()
+{
+    for (int o = 0; o < m_num_outports; o++) {
+        
+        auto output_unit = m_router->getOutputUnit(o);
+        // Read SSR at the top of the SSR request queue (Highest Priority)   
+        if (output_unit->isReadySSR()) {
+
+            // Grant SSR at head of prio queue
+            // as it has highest priority
+            SSR* t_ssr = output_unit->getTopSSR();
+
+            //DPRINTF(RubyNetwork, "SwitchAllocator at Rourer %d granting
+            // SSR for inport %d for outport %d", m_router->get_id(), 
+            //m_router->getPortDirectionName(m_input_unit[t_ssr->get_inport()]->get_direction()), 
+            //m_router->getPortDirectionName(m_output_unit[o]->get_direction()));
+
+            // Push grant to prio queue in input unit
+            auto input_unit = m_router->getInputUnit(t_ssr->get_inport());
+            input_unit->grantSSR(t_ssr);
+
+            // Clear SSR request queue for this cycle
+            output_unit->clearSSRreqs();
+        }
+    }
+}
+
 
 } // namespace garnet
 } // namespace ruby

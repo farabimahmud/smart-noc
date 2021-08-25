@@ -1388,7 +1388,7 @@ class SimObject(object, metaclass=MetaSimObject):
     def __getattr__(self, attr):
         if attr in self._deprecated_params:
             dep_param = self._deprecated_params[attr]
-            dep_param.printWarning(self._name, self.__class__.__name__)
+            # dep_param.printWarning(self._name, self.__class__.__name__)
             return getattr(self, self._deprecated_params[attr].newName)
 
         if attr in self._ports:
@@ -1425,7 +1425,7 @@ class SimObject(object, metaclass=MetaSimObject):
 
         if attr in self._deprecated_params:
             dep_param = self._deprecated_params[attr]
-            dep_param.printWarning(self._name, self.__class__.__name__)
+            # dep_param.printWarning(self._name, self.__class__.__name__)
             return setattr(self, self._deprecated_params[attr].newName, value)
 
         if attr in self._ports:
