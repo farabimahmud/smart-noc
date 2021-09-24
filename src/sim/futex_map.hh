@@ -138,6 +138,12 @@ class FutexMap : public std::unordered_map<FutexKey, WaiterList>
      */
     bool is_waiting(ThreadContext *tc);
 
+    /**
+     * This function replaces threads in the futex map.
+     * Used to support take over from multiple threads.
+     */
+     void takeOverThread(ThreadContext *oldThread, ThreadContext *newThread);
+
   private:
 
     std::unordered_set<ThreadContext *> waitingTcs;
