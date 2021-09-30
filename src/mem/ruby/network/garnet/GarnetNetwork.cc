@@ -623,6 +623,14 @@ GarnetNetwork::functionalWrite(Packet *pkt)
     return num_functional_writes;
 }
 
+bool
+GarnetNetwork::functionalRead(Packet* pkt){
+
+    // TODO
+    // Fix this hack
+    return true;
+}
+
 } // namespace garnet
 } // namespace ruby
 } // namespace gem5

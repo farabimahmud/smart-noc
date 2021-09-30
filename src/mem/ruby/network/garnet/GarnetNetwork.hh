@@ -108,6 +108,7 @@ class GarnetNetwork : public Network
     //! Function for performing a functional write. The return value
     //! indicates the number of messages that were written.
     uint32_t functionalWrite(Packet *pkt);
+    bool functionalRead(Packet *pkt);
 
     // Stats
     void collateStats();

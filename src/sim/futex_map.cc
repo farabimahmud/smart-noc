@@ -187,4 +187,18 @@ FutexMap::is_waiting(ThreadContext *tc)
     return waitingTcs.find(tc) != waitingTcs.end();
 }
 
+
+void
+FutexMap::takeOverThread(ThreadContext *oldThread, ThreadContext *newThread)
+{
+    for (auto &waiterList : *this) {
+        for (auto &waiterState : waiterList.second) {
+            if (waiterState.tc == oldThread) {
+                waiterState.tc = newThread;
+            }
+        }
+    }
+}
+
+
 } // namespace gem5
