@@ -62,6 +62,7 @@ class SSR;
 class GarnetNetwork : public Network
 {
   public:
+    static int PACKETID;
     typedef GarnetNetworkParams Params;
     GarnetNetwork(const Params &p);
     ~GarnetNetwork() = default;

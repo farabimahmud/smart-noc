@@ -1,0 +1,51 @@
+Global frequency set at 1000000000000 ticks per second
+0: system.remote_gdb: listening for remote gdb on port 7000
+gem5 Simulator System.  http://gem5.org
+gem5 is copyrighted software; use the --copyright option for details.
+
+gem5 version 21.1.0.0
+gem5 compiled Oct 13 2021 14:03:07
+gem5 started Oct 13 2021 14:09:36
+gem5 executing on atlas.engr.tamu.edu, pid 45541
+command line: build/X86_MESI_Two_Level/gem5.opt --debug-file=debug.out --debug-flags=Ruby configs/example/se.py --num-cpus=16 --num-dirs=16 --network=garnet --topology=Mesh_XY --mesh-row=4 --ruby --caches --l2cache --num-l2caches=16 --cpu-type=DerivO3CPU --cmd=/home/grads/f/farabi/benchmarks/parsec-build/blackscholes/bin --maxinsts=1000000 '--options=16 /home/grads/f/farabi/benchmarks/parsec-build/blackscholes/in_4.txt /home/grads/f/farabi/benchmarks/parsec-build/blackscholes/output.out'
+
+**** REAL SIMULATION ****
+build/X86_MESI_Two_Level/sim/simulate.cc:107: info: Entering event queue @ 0.  Starting simulation...
+build/X86_MESI_Two_Level/mem/ruby/system/Sequencer.cc:236: panic: Possible Deadlock detected. Aborting!
+ version: 0 request.paddr: 0x4a900 m_readRequestTable: 2 current time: 250000000 issue_time: 0 difference: 250000000
+Memory Usage: 1112392 KBytes
+Program aborted at tick 250000000
+--- BEGIN LIBC BACKTRACE ---
+build/X86_MESI_Two_Level/gem5.opt[0x11f1935]
+build/X86_MESI_Two_Level/gem5.opt[0x120e759]
+/lib64/libpthread.so.0(+0xf630)[0x7ff682a94630]
+/lib64/libc.so.6(gsignal+0x37)[0x7ff68130b387]
+/lib64/libc.so.6(abort+0x148)[0x7ff68130ca78]
+build/X86_MESI_Two_Level/gem5.opt[0x61509f]
+build/X86_MESI_Two_Level/gem5.opt[0x114f46c]
+build/X86_MESI_Two_Level/gem5.opt[0x11fe1ce]
+build/X86_MESI_Two_Level/gem5.opt[0x122a329]
+build/X86_MESI_Two_Level/gem5.opt[0x122a98a]
+build/X86_MESI_Two_Level/gem5.opt[0xb7a00b]
+build/X86_MESI_Two_Level/gem5.opt[0xb5803b]
+/lib64/libpython3.6m.so.1.0(PyCFunction_Call+0xa6)[0x7ff682d87a96]
+/lib64/libpython3.6m.so.1.0(_PyEval_EvalFrameDefault+0x68f4)[0x7ff682dedf64]
+/lib64/libpython3.6m.so.1.0(+0x151317)[0x7ff682df2317]
+/lib64/libpython3.6m.so.1.0(+0x151fea)[0x7ff682df2fea]
+/lib64/libpython3.6m.so.1.0(+0x152273)[0x7ff682df3273]
+/lib64/libpython3.6m.so.1.0(_PyEval_EvalFrameDefault+0x3a7)[0x7ff682de7a17]
+/lib64/libpython3.6m.so.1.0(+0x151f3a)[0x7ff682df2f3a]
+/lib64/libpython3.6m.so.1.0(+0x152273)[0x7ff682df3273]
+/lib64/libpython3.6m.so.1.0(_PyEval_EvalFrameDefault+0x3a7)[0x7ff682de7a17]
+/lib64/libpython3.6m.so.1.0(+0x1516d2)[0x7ff682df26d2]
+/lib64/libpython3.6m.so.1.0(+0x151fea)[0x7ff682df2fea]
+/lib64/libpython3.6m.so.1.0(+0x152273)[0x7ff682df3273]
+/lib64/libpython3.6m.so.1.0(_PyEval_EvalFrameDefault+0x3a7)[0x7ff682de7a17]
+/lib64/libpython3.6m.so.1.0(PyEval_EvalCodeEx+0x22d)[0x7ff682df35ed]
+/lib64/libpython3.6m.so.1.0(PyEval_EvalCode+0x3b)[0x7ff682df410b]
+/lib64/libpython3.6m.so.1.0(+0x145a5b)[0x7ff682de6a5b]
+/lib64/libpython3.6m.so.1.0(_PyCFunction_FastCallDict+0x9a)[0x7ff682d8773a]
+/lib64/libpython3.6m.so.1.0(+0x15214f)[0x7ff682df314f]
+/lib64/libpython3.6m.so.1.0(_PyEval_EvalFrameDefault+0x3a7)[0x7ff682de7a17]
+/lib64/libpython3.6m.so.1.0(+0x151317)[0x7ff682df2317]
+--- END LIBC BACKTRACE ---

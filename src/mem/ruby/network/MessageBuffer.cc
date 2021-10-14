@@ -494,8 +494,8 @@ MessageBuffer::isReady(Tick current_time) const
 uint32_t
 MessageBuffer::functionalAccess(Packet *pkt, bool is_read, WriteMask *mask)
 {
-    DPRINTF(RubyQueue, "functional %s for %#x\n",
-            is_read ? "read" : "write", pkt->getAddr());
+    //DPRINTF(RubyQueue, "functional %s for %#x\n",
+    //        is_read ? "read" : "write", pkt->getAddr());
 
     uint32_t num_functional_accesses = 0;
 

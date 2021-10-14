@@ -37,6 +37,7 @@
 
 #include "base/cast.hh"
 #include "debug/RubyNetwork.hh"
+#include "debug/smart.hh"
 #include "mem/ruby/network/MessageBuffer.hh"
 #include "mem/ruby/network/garnet/Credit.hh"
 #include "mem/ruby/network/garnet/flitBuffer.hh"
@@ -195,8 +196,8 @@ NetworkInterface::wakeup()
     for (auto &oPort: outPorts) {
         oss << oPort->routerID() << "[" << oPort->printVnets() << "] ";
     }
-    DPRINTF(RubyNetwork, "Network Interface %d connected to router:%s "
-            "woke up. Period: %ld\n", m_id, oss.str(), clockPeriod());
+    //DPRINTF(RubyNetwork, "Network Interface %d connected to router:%s "
+    //        "woke up. Period: %ld\n", m_id, oss.str(), clockPeriod());
 
     assert(curTick() == clockEdge());
     MsgPtr msg_ptr;
@@ -225,12 +226,13 @@ NetworkInterface::wakeup()
     checkStallQueue();
 
     /*********** Check the incoming flit link **********/
-    DPRINTF(RubyNetwork, "Number of input ports: %d\n", inPorts.size());
+    // DPRINTF(RubyNetwork, "Number of input ports: %d\n", inPorts.size());
     for (auto &iPort: inPorts) {
         NetworkLink *inNetLink = iPort->inNetLink();
         if (inNetLink->isReady(curTick())) {
             flit *t_flit = inNetLink->consumeLink();
             DPRINTF(RubyNetwork, "Recieved flit:%s\n", *t_flit);
+            DPRINTF(smart, "Received flit:%s\n", *t_flit);
             assert(t_flit->m_width == iPort->bitWidth());
 
             int vnet = t_flit->get_vnet();
@@ -252,8 +254,10 @@ NetworkInterface::wakeup()
                     Credit *cFlit = new Credit(t_flit->get_vc(),
                                                true, curTick());
                     iPort->sendCredit(cFlit);
+                    DPRINTF(smart, "Sending credit %s\n", *cFlit);
                     // Update stats and delete flit pointer
                     incrementStats(t_flit);
+                    DPRINTF(smart, "consuming flit:%s\n", *t_flit);
                     delete t_flit;
                 } else {
                     // No space available- Place tail flit in stall queue and
@@ -273,6 +277,8 @@ NetworkInterface::wakeup()
                 // Simply send a credit back since we are not buffering
                 // this flit in the NI
                 iPort->sendCredit(cFlit);
+                DPRINTF(smart, "Sending credit %s\n", *cFlit);
+
 
                 // Update stats and delete flit pointer.
                 incrementStats(t_flit);
@@ -286,6 +292,8 @@ NetworkInterface::wakeup()
     for (auto &oPort: outPorts) {
         CreditLink *inCreditLink = oPort->inCreditLink();
         if (inCreditLink->isReady(curTick())) {
+            DPRINTF(smart, "inCreditLink is ready at %lld\n", curTick());
+
             Credit *t_credit = (Credit*) inCreditLink->consumeLink();
             outVcState[t_credit->get_vc()].increment_credit();
             if (t_credit->is_free_signal()) {
@@ -303,9 +311,9 @@ NetworkInterface::wakeup()
     // back.
     for (auto &iPort: inPorts) {
         if (iPort->outCreditQueue()->getSize() > 0) {
-            DPRINTF(RubyNetwork, "Sending a credit %s via %s at %ld\n",
-            *(iPort->outCreditQueue()->peekTopFlit()),
-            iPort->outCreditLink()->name(), clockEdge(Cycles(1)));
+            //DPRINTF(RubyNetwork, "Sending a credit %s via %s at %ld\n",
+            //*(iPort->outCreditQueue()->peekTopFlit()),
+            //iPort->outCreditLink()->name(), clockEdge(Cycles(1)));
             iPort->outCreditLink()->
                 scheduleEventAbsolute(clockEdge(Cycles(1)));
         }
@@ -323,6 +331,8 @@ NetworkInterface::checkStallQueue()
         Tick curTime = clockEdge();
 
         if (!iPort->m_stall_queue.empty()) {
+            DPRINTF(smart, "[NI] Stall Queue not empty at cycle %llu\n",
+                    curTime);
             for (auto stallIter = iPort->m_stall_queue.begin();
                  stallIter != iPort->m_stall_queue.end(); ) {
                 flit *stallFlit = *stallIter;
@@ -340,6 +350,7 @@ NetworkInterface::checkStallQueue()
                     Credit *cFlit = new Credit(stallFlit->get_vc(), true,
                                                    curTick());
                     iPort->sendCredit(cFlit);
+                    DPRINTF(smart, "Sending credit %s\n", *cFlit);
 
                     // Update Stats
                     incrementStats(stallFlit);
@@ -419,6 +430,7 @@ NetworkInterface::flitisizeMessage(MsgPtr msg_ptr, int vnet)
             net_msg_ptr->getDestination().removeNetDest(personal_dest);
         }
 
+
         // Embed Route into the flits
         // NetDest format is used by the routing table
         // Custom routing algorithms just need destID
@@ -443,11 +455,11 @@ NetworkInterface::flitisizeMessage(MsgPtr msg_ptr, int vnet)
                 m_net_ptr->MessageSizeType_to_int(
                 net_msg_ptr->getMessageSize()),
                 oPort->bitWidth(), curTick());
-
+            fl->set_pid(GarnetNetwork::PACKETID);
             fl->set_src_delay(curTick() - msg_ptr->getTime());
             niOutVcs[vc].insert(fl);
         }
-
+        GarnetNetwork::PACKETID++;
         m_ni_out_vcs_enqueue_time[vc] = curTick();
         outVcState[vc].setState(ACTIVE_, curTick());
     }

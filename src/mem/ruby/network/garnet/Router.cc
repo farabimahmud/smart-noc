@@ -295,8 +295,10 @@ Router::functionalWrite(Packet *pkt)
 void
 Router::insertSSR(PortDirection inport_dirn, SSR* t_ssr)
 {
-    DPRINTF(RubyNetwork, "Router %d Inport %s received SSR from src_hops %d for bypass = %d for Outport %s\n",
-            get_id(), inport_dirn, t_ssr->get_src_hops(), t_ssr->get_bypass_req(), t_ssr->get_outport_dirn());
+    DPRINTF(RubyNetwork, "Router %d Inport %s received SSR"
+            " from src_hops %d for bypass = %d for Outport %s\n",
+            get_id(), inport_dirn, t_ssr->get_src_hops(),
+            t_ssr->get_bypass_req(), t_ssr->get_outport_dirn());
 
     int inport = routingUnit.getInportIdx(inport_dirn);
     int outport = routingUnit.getOutportIdx(t_ssr->get_outport_dirn());

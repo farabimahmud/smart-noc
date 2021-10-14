@@ -52,6 +52,37 @@ flit::flit(int id, int  vc, int vnet, RouteInfo route, int size,
     m_dequeue_time = curTime;
     m_time = curTime;
     m_id = id;
+    m_pid = 0;
+    m_vnet = vnet;
+    m_vc = vc;
+    m_route = route;
+    m_stage.first = I_;
+    m_stage.second = curTime;
+    m_width = bWidth;
+    msgSize = MsgSize;
+
+    if (size == 1) {
+        m_type = HEAD_TAIL_;
+        return;
+    }
+    if (id == 0)
+        m_type = HEAD_;
+    else if (id == (size - 1))
+        m_type = TAIL_;
+    else
+        m_type = BODY_;
+}
+
+flit::flit(int pid,int id, int  vc, int vnet, RouteInfo route, int size,
+    MsgPtr msg_ptr, int MsgSize, uint32_t bWidth, Tick curTime)
+{
+    m_size = size;
+    m_msg_ptr = msg_ptr;
+    m_enqueue_time = curTime;
+    m_dequeue_time = curTime;
+    m_time = curTime;
+    m_id = id;
+    m_pid = pid;
     m_vnet = vnet;
     m_vc = vc;
     m_route = route;
@@ -109,6 +140,7 @@ void
 flit::print(std::ostream& out) const
 {
     out << "[flit:: ";
+    out << "PID=" << m_pid << " ";
     out << "Id=" << m_id << " ";
     out << "Type=" << m_type << " ";
     out << "Size=" << m_size << " ";

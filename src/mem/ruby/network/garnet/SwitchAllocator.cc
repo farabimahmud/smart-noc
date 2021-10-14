@@ -32,6 +32,7 @@
 #include "mem/ruby/network/garnet/SwitchAllocator.hh"
 
 #include "debug/RubyNetwork.hh"
+#include "debug/smart.hh"
 #include "mem/ruby/network/garnet/GarnetNetwork.hh"
 #include "mem/ruby/network/garnet/InputUnit.hh"
 #include "mem/ruby/network/garnet/OutputUnit.hh"
@@ -276,6 +277,8 @@ SwitchAllocator::arbitrate_outports()
                         m_output_unit->get_direction(),
                         req_hops);
 
+                        DPRINTF(smart, "adding SSR from Router %d\n",
+                                m_router->get_id());
                         // SSR Traversal is magical right now
                         net_ptr->sendSSR(m_router->get_id(),
                                          m_output_unit->get_direction(),

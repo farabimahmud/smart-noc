@@ -37,6 +37,7 @@
 #include "debug/smart.hh"
 #include "mem/ruby/network/garnet/CreditLink.hh"
 #include "mem/ruby/network/garnet/InputUnit.hh"
+
 namespace gem5
 {
 
@@ -114,16 +115,17 @@ NetworkLink::wakeup()
 
         bool router_bypass = false;
         if (m_type == INT_){
-            DPRINTF(smart, "Router with this link is %#x\n", link_consumer_inport->get_router());
+            DPRINTF(smart, "Router with this link is %#x\n",
+                    link_consumer_inport->get_router());
             if (link_consumer_inport->get_router()->get_net_ptr()->isSMART()){
                 t_flit->set_time(curCycle());
                 router_bypass = link_consumer_inport->try_smart_bypass(t_flit);
-            }            
+            }
         }
         if (!router_bypass){
             t_flit->set_time(clockEdge(m_latency));
             linkBuffer.insert(t_flit);
-            link_consumer->scheduleEventAbsolute(clockEdge(m_latency));            
+            link_consumer->scheduleEventAbsolute(clockEdge(m_latency));
         }
     }
 

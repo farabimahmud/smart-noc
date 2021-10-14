@@ -57,6 +57,7 @@ namespace ruby
 namespace garnet
 {
 
+    int GarnetNetwork::PACKETID = 0;
 /*
  * GarnetNetwork sets up the routers and links and collects stats.
  * Default parameters (GarnetNetwork.py) can be overwritten from command line
@@ -687,7 +688,10 @@ GarnetNetwork::sendSSR(int src, PortDirection outport_dirn, int req_hops,
 
                 insertSSR(dst, "North", hops, bypass_req, t_ssr);
             }
-        } else {
+        } else if (outport_dirn =="Local"){
+            DPRINTF(smart, "Local Outport, SSR not needed\n");
+        }
+        else {
             assert(0);
         }   
     }

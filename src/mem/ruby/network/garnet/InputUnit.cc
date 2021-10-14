@@ -32,6 +32,7 @@
 #include "mem/ruby/network/garnet/InputUnit.hh"
 
 #include "debug/RubyNetwork.hh"
+#include "debug/smart.hh"
 #include "mem/ruby/network/garnet/Credit.hh"
 #include "mem/ruby/network/garnet/Router.hh"
 
@@ -183,7 +184,7 @@ bool
 InputUnit::try_smart_bypass(flit *t_flit)
 {
     // Check if router is setup for SMART bypass this cycle
-    DPRINTF(RubyNetwork, "Router %d Inport %s trying to bypass flit %s\n",
+    DPRINTF(smart, "Router %d Inport %s trying to bypass flit %s\n",
                  m_router->get_id(), m_direction, *t_flit);
 
 //    PortDirection outport_dirn = t_flit->get_route()->outport_dirn;
@@ -205,7 +206,8 @@ InputUnit::try_smart_bypass(flit *t_flit)
                 return false;
             } else {
 
-                DPRINTF(RubyNetwork, "Router %d Inport %s Trying SMART Bypass for Flit %s\n",
+                DPRINTF(RubyNetwork, "Router %d Inport %s"
+                        " Trying SMART Bypass for Flit %s\n",
                         m_router->get_id(), m_direction, *t_flit);
 
                 // SSR for this flit won arbitration last cycle
@@ -232,8 +234,14 @@ InputUnit::try_smart_bypass(flit *t_flit)
 void
 InputUnit::grantSSR(SSR *t_ssr)
 {
-    DPRINTF(RubyNetwork, "Router %d Inport %s granted SSR for flit %d from src_hops %d for bypass = %d for Outport %s\n",
-            m_router->get_id(), m_direction, *(t_ssr->get_ref_flit()), t_ssr->get_src_hops(), t_ssr->get_bypass_req(), t_ssr->get_outport_dirn());
+    DPRINTF(RubyNetwork, "Router %d Inport %s granted SSR"
+            " for flit %d from src_hops %d for bypass = %d for Outport %s\n",
+            m_router->get_id(),
+            m_direction,
+            *(t_ssr->get_ref_flit()),
+            t_ssr->get_src_hops(),
+            t_ssr->get_bypass_req(),
+            t_ssr->get_outport_dirn());
 
     // Update valid time to next cycle
     t_ssr->set_time(m_router->curCycle() + Cycles(1));

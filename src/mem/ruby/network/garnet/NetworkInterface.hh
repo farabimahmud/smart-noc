@@ -36,6 +36,7 @@
 #include <iostream>
 #include <vector>
 
+#include "debug/smart.hh"
 #include "mem/ruby/common/Consumer.hh"
 #include "mem/ruby/network/garnet/CommonTypes.hh"
 #include "mem/ruby/network/garnet/Credit.hh"
@@ -236,7 +237,7 @@ class NetworkInterface : public ClockedObject, public Consumer
 
           void sendCredit(Credit *cFlit)
           {
-              _outCreditQueue->insert(cFlit);
+               _outCreditQueue->insert(cFlit);
           }
 
           uint32_t bitWidth()
