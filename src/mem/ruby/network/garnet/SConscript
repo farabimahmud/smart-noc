@@ -54,3 +54,4 @@ Source('SSR.cc')
 Source('CreditLink.cc')
 
 DebugFlag('smart')
+DebugFlag('credit')

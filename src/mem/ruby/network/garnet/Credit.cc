@@ -31,6 +31,7 @@
 
 #include "base/trace.hh"
 #include "debug/RubyNetwork.hh"
+#include "debug/credit.hh"
 
 namespace gem5
 {
@@ -50,6 +51,7 @@ Credit::Credit(int vc, bool is_free_signal, Tick curTime)
 {
     m_is_free_signal = is_free_signal;
     m_type = CREDIT_;
+    DPRINTF(credit, "[Credit] Credit is created %s\n", *this);
 }
 
 flit *
@@ -83,6 +85,10 @@ Credit::print(std::ostream& out) const
 {
     out << "[Credit:: ";
     out << "Type=" << m_type << " ";
+    out << "PID=" << m_pid << " ";
+    out << "ID=" << m_id << " ";
+    out << "Src Router=" << m_route.src_router << " ";
+    out << "Dst Router=" << m_route.dest_router << " ";
     out << "VC=" << m_vc << " ";
     out << "FreeVC=" << m_is_free_signal << " ";
     out << "Set Time=" << m_time << " ";
