@@ -32,6 +32,7 @@
 #include "mem/ruby/network/garnet/InputUnit.hh"
 
 #include "debug/RubyNetwork.hh"
+#include "debug/credit.hh"
 #include "debug/smart.hh"
 #include "mem/ruby/network/garnet/Credit.hh"
 #include "mem/ruby/network/garnet/Router.hh"
@@ -148,6 +149,11 @@ InputUnit::increment_credit(int in_vc, bool free_signal, Tick curTime)
     DPRINTF(RubyNetwork, "Router[%d]: Sending a credit vc:%d free:%d to %s\n",
     m_router->get_id(), in_vc, free_signal, m_credit_link->name());
     Credit *t_credit = new Credit(in_vc, free_signal, curTime+ Cycles(1));
+    DPRINTF(credit, "[InputUnit:increment_credit]"
+    " Credit is incremented and inserted in creditQueue"
+    " %s at Router %d InputUnit %s\n",
+    *t_credit, m_router->get_id(), m_direction);
+
     creditQueue.insert(t_credit);
     m_credit_link->scheduleEventAbsolute(m_router->clockEdge(Cycles(1)));
 }

@@ -32,6 +32,7 @@
 #include "mem/ruby/network/garnet/OutputUnit.hh"
 
 #include "debug/RubyNetwork.hh"
+#include "debug/credit.hh"
 #include "mem/ruby/network/garnet/Credit.hh"
 #include "mem/ruby/network/garnet/CreditLink.hh"
 #include "mem/ruby/network/garnet/Router.hh"
@@ -62,6 +63,11 @@ void
 OutputUnit::decrement_credit(int out_vc)
 {
     DPRINTF(RubyNetwork, "Router %d OutputUnit %s decrementing credit:%d for "
+            "outvc %d at time: %lld for %s\n", m_router->get_id(),
+            m_router->getPortDirectionName(get_direction()),
+            outVcState[out_vc].get_credit_count(),
+            out_vc, m_router->curCycle(), m_credit_link->name());
+    DPRINTF(credit, "Router %d OutputUnit %s decrementing credit:%d for "
             "outvc %d at time: %lld for %s\n", m_router->get_id(),
             m_router->getPortDirectionName(get_direction()),
             outVcState[out_vc].get_credit_count(),

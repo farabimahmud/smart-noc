@@ -37,6 +37,7 @@
 
 #include "base/cast.hh"
 #include "debug/RubyNetwork.hh"
+#include "debug/credit.hh"
 #include "debug/smart.hh"
 #include "mem/ruby/network/MessageBuffer.hh"
 #include "mem/ruby/network/garnet/Credit.hh"
@@ -251,10 +252,12 @@ NetworkInterface::wakeup()
 
                     // Simply send a credit back since we are not buffering
                     // this flit in the NI
-                    Credit *cFlit = new Credit(t_flit->get_vc(),
-                                               true, curTick());
+                    // Credit *cFlit = new Credit(t_flit->get_vc(),
+                    //                            true, curTick());
+                    Credit * cFlit = new Credit(t_flit, true, curTick());
                     iPort->sendCredit(cFlit);
-                    DPRINTF(smart, "Sending credit %s\n", *cFlit);
+                    DPRINTF(credit, "[NI:wakeup]"
+                    " Sending tail credit %s\n", *cFlit);
                     // Update stats and delete flit pointer
                     incrementStats(t_flit);
                     DPRINTF(smart, "consuming flit:%s\n", *t_flit);
@@ -272,12 +275,14 @@ NetworkInterface::wakeup()
                 }
             } else {
                 // Non-tail flit. Send back a credit but not VC free signal.
-                Credit *cFlit = new Credit(t_flit->get_vc(), false,
-                                               curTick());
+                // Credit *cFlit = new Credit(t_flit->get_vc(), false,
+                //                                curTick());
+                Credit * cFlit = new Credit(t_flit, false,curTick());
                 // Simply send a credit back since we are not buffering
                 // this flit in the NI
                 iPort->sendCredit(cFlit);
-                DPRINTF(smart, "Sending credit %s\n", *cFlit);
+                DPRINTF(credit, "[NI:wakeup] "
+                "Sending non-tail credit %s\n", *cFlit);
 
 
                 // Update stats and delete flit pointer.
@@ -292,9 +297,8 @@ NetworkInterface::wakeup()
     for (auto &oPort: outPorts) {
         CreditLink *inCreditLink = oPort->inCreditLink();
         if (inCreditLink->isReady(curTick())) {
-            DPRINTF(smart, "inCreditLink is ready at %lld\n", curTick());
-
             Credit *t_credit = (Credit*) inCreditLink->consumeLink();
+            DPRINTF(credit, "[NI:wakeup] Consuming Credit %s\n", *t_credit);
             outVcState[t_credit->get_vc()].increment_credit();
             if (t_credit->is_free_signal()) {
                 outVcState[t_credit->get_vc()].setState(IDLE_,
@@ -347,10 +351,12 @@ NetworkInterface::checkStallQueue()
 
                     // Send back a credit with free signal now that the
                     // VC is no longer stalled.
-                    Credit *cFlit = new Credit(stallFlit->get_vc(), true,
-                                                   curTick());
+                    // Credit *cFlit = new Credit(stallFlit->get_vc(), true,
+                    //                                curTick());
+                    Credit * cFlit = new Credit(stallFlit, true, curTick());
                     iPort->sendCredit(cFlit);
-                    DPRINTF(smart, "Sending credit %s\n", *cFlit);
+                    DPRINTF(credit, "[NI:CheckStallQueue]"
+                    " Sending credit %s\n", *cFlit);
 
                     // Update Stats
                     incrementStats(stallFlit);

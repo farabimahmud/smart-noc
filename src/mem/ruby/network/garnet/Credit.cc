@@ -54,6 +54,22 @@ Credit::Credit(int vc, bool is_free_signal, Tick curTime)
     DPRINTF(credit, "[Credit] Credit is created %s\n", *this);
 }
 
+Credit::Credit(flit* t_flit, bool is_free_signal, Tick curTime):
+flit(t_flit->get_id(),
+    t_flit->get_vc(),
+    t_flit->get_vnet(),
+    t_flit->get_route(),
+    t_flit->get_size(),
+    nullptr,
+    0,
+    0,
+    curTime){
+    m_is_free_signal = is_free_signal;
+    m_type = CREDIT_;
+}
+
+
+
 flit *
 Credit::serialize(int ser_id, int parts, uint32_t bWidth)
 {

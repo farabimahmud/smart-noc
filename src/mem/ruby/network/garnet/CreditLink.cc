@@ -30,8 +30,10 @@
  */
 
 
-#include "mem/ruby/network/garnet/NetworkLink.hh"
 #include "mem/ruby/network/garnet/CreditLink.hh"
+
+#include "debug/credit.hh"
+#include "mem/ruby/network/garnet/NetworkLink.hh"
 
 namespace gem5
 {
@@ -46,6 +48,8 @@ void
 CreditLink::wakeup(){
     while(link_srcQueue->isReady(curCycle())){
         flit * t_flit = link_srcQueue->getTopFlit();
+        DPRINTF(credit, "[CreditLink:wakeup] "
+            " Credit is in Link %s\n", *t_flit);
         t_flit->set_time(curCycle() + m_latency);
         linkBuffer.insert(t_flit);
         link_consumer->scheduleEventAbsolute(clockEdge(m_latency));

@@ -237,6 +237,9 @@ class NetworkInterface : public ClockedObject, public Consumer
 
           void sendCredit(Credit *cFlit)
           {
+              DPRINTF(credit, "[InputPort::sendCredit] "
+              "Credit %s inserted in InputPort outCreditQueue",
+              *cFlit);
                _outCreditQueue->insert(cFlit);
           }
 
