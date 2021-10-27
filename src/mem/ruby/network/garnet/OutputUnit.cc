@@ -251,6 +251,12 @@ OutputUnit::functionalWrite(Packet *pkt)
     return outBuffer.functionalWrite(pkt);
 }
 
+bool
+OutputUnit::functionalRead(Packet *pkt)
+{
+    return outBuffer.functionalRead(pkt);
+}
+
 } // namespace garnet
 } // namespace ruby
 } // namespace gem5

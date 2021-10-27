@@ -108,6 +108,16 @@ CrossbarSwitch::functionalWrite(Packet *pkt)
    return num_functional_writes;
 }
 
+bool
+CrossbarSwitch::functionalRead(Packet *pkt){
+    bool read = false;
+    for (auto& switch_buffer: switchBuffers){
+        read = switch_buffer.functionalRead(pkt);
+        if (read) return read;
+    }
+    return read;
+}
+
 void
 CrossbarSwitch::resetStats()
 {

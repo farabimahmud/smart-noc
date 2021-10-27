@@ -68,6 +68,7 @@ class CrossbarSwitch : public Consumer
     inline double get_crossbar_activity() { return m_crossbar_activity; }
 
     uint32_t functionalWrite(Packet *pkt);
+    bool functionalRead(Packet *pkt);
     void resetStats();
 
   private:

@@ -99,6 +99,18 @@ flitBuffer::functionalWrite(Packet *pkt)
     return num_functional_writes;
 }
 
+bool
+flitBuffer::functionalRead(Packet* pkt){
+    bool read = false;
+    for (unsigned int i = 0; i < m_buffer.size(); ++i) {
+        if (m_buffer[i]->functionalWrite(pkt)) {
+            read = true;
+            if (read) return read;
+        }
+    }
+    return read;
+}
+
 } // namespace garnet
 } // namespace ruby
 } // namespace gem5

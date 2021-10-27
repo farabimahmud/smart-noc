@@ -81,6 +81,13 @@ VirtualChannel::functionalWrite(Packet *pkt)
     return inputBuffer.functionalWrite(pkt);
 }
 
+bool
+VirtualChannel::functionalRead(Packet *pkt)
+{
+    return inputBuffer.functionalRead(pkt);
+}
+
+
 } // namespace garnet
 } // namespace ruby
 } // namespace gem5

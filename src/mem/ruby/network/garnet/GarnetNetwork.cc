@@ -644,6 +644,27 @@ GarnetNetwork::functionalWrite(Packet *pkt)
     return num_functional_writes;
 }
 
+bool
+GarnetNetwork::functionalRead(Packet *pkt){
+    bool read = false;
+    // read from routers
+    for (unsigned int i = 0; i < m_routers.size(); i++) {
+        read = m_routers[i]->functionalRead(pkt);
+        if (read) return read;
+    }
+    // read from nis
+    for (unsigned int i = 0; i < m_nis.size(); ++i) {
+        read = m_nis[i]->functionalRead(pkt);
+        if (read) return read;
+    }
+
+    // read from networklinks
+    for (unsigned int i = 0; i < m_networklinks.size(); ++i) {
+        read = m_networklinks[i]->functionalRead(pkt);
+        if (read) return read;
+    }
+    return read;
+}
 
 // SMART NoC
 void

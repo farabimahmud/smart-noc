@@ -84,6 +84,7 @@ class NetworkInterface : public ClockedObject, public Consumer
     void init_net_ptr(GarnetNetwork *net_ptr) { m_net_ptr = net_ptr; }
 
     uint32_t functionalWrite(Packet *);
+    bool functionalRead(Packet *pkt);
 
     void scheduleFlit(flit *t_flit);
 

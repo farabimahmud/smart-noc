@@ -292,6 +292,23 @@ Router::functionalWrite(Packet *pkt)
     return num_functional_writes;
 }
 
+bool
+Router::functionalRead(Packet *pkt){
+    bool read = false;
+    read = crossbarSwitch.functionalRead(pkt);
+    // read from input units
+    for (uint32_t i = 0; i < m_input_unit.size(); i++) {
+        read = m_input_unit[i]->functionalRead(pkt);
+        if (read) return read;
+    }
+    // read from output units
+    for (uint32_t i = 0; i < m_output_unit.size(); i++) {
+        read = m_output_unit[i]->functionalRead(pkt);
+        if (read) return read;
+    }
+    return read;
+}
+
 void
 Router::insertSSR(PortDirection inport_dirn, SSR* t_ssr)
 {

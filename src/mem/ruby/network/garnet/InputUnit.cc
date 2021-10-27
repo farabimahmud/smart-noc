@@ -171,6 +171,17 @@ InputUnit::functionalWrite(Packet *pkt)
     return num_functional_writes;
 }
 
+bool
+InputUnit::functionalRead(Packet *pkt){
+    bool read = false;
+    for (auto& virtual_channel : virtualChannels) {
+        read = virtual_channel.functionalRead(pkt);
+        if (read)return read;
+    }
+
+    return read;
+}
+
 void
 InputUnit::resetStats()
 {

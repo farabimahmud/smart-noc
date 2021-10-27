@@ -158,6 +158,8 @@ class InputUnit : public Consumer
     { return m_num_buffer_writes[vnet]; }
 
     uint32_t functionalWrite(Packet *pkt);
+    bool functionalRead(Packet *pkt);
+
     void resetStats();
     // SMART NoC
     void grantSSR(SSR *t_ssr);

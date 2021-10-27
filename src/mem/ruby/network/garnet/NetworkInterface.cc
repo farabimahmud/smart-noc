@@ -699,6 +699,20 @@ NetworkInterface::functionalWrite(Packet *pkt)
     return num_functional_writes;
 }
 
+bool
+NetworkInterface::functionalRead(Packet * pkt){
+    bool read = false;
+    for (auto& ni_out_vc : niOutVcs) {
+        read = ni_out_vc.functionalRead(pkt);
+        if (read) return read;
+    }
+    for (auto &oPort: outPorts) {
+        read = oPort->outFlitQueue()->functionalRead(pkt);
+        if (read) return read;
+    }
+    return read;
+}
+
 } // namespace garnet
 } // namespace ruby
 } // namespace gem5

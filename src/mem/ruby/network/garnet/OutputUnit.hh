@@ -106,6 +106,8 @@ class OutputUnit : public Consumer
     }
 
     uint32_t functionalWrite(Packet *pkt);
+    bool functionalRead(Packet* pkt);
+
     // SMART NoC
     void insertSSR(SSR *t_ssr);
     bool isReadySSR();

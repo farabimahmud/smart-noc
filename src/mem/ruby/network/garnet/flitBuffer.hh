@@ -81,6 +81,7 @@ class flitBuffer
     }
 
     uint32_t functionalWrite(Packet *pkt);
+    bool functionalRead(Packet* pkt);
 
   private:
     std::deque<flit *> m_buffer;
