@@ -155,7 +155,8 @@ InputUnit::increment_credit(int in_vc, bool free_signal, Tick curTime)
     *t_credit, m_router->get_id(), m_direction);
 
     creditQueue.insert(t_credit);
-    m_credit_link->scheduleEventAbsolute(m_router->clockEdge(Cycles(1)));
+    m_credit_link->scheduleEvent(Cycles(1));
+    // m_credit_link->scheduleEventAbsolute(m_router->clockEdge(Cycles(1)));
 }
 
 

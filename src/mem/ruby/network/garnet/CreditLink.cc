@@ -46,10 +46,12 @@ namespace garnet
 
 void
 CreditLink::wakeup(){
-    while(link_srcQueue->isReady(curCycle())){
+    DPRINTF(credit, "[CreditLink::wakeup] peek %s\n",
+     *(link_srcQueue->peekTopFlit()));
+    while (link_srcQueue->isReady(curTick())){
         flit * t_flit = link_srcQueue->getTopFlit();
         DPRINTF(credit, "[CreditLink:wakeup] "
-            " Credit is in Link %s\n", *t_flit);
+            " Credit %s is in Link %d\n", *t_flit, get_id());
         t_flit->set_time(curCycle() + m_latency);
         linkBuffer.insert(t_flit);
         link_consumer->scheduleEventAbsolute(clockEdge(m_latency));
