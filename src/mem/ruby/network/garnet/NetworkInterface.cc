@@ -574,7 +574,7 @@ NetworkInterface::scheduleOutputLink()
     }
 }
 
-NetworkInterface::InputPort *
+InputPort *
 NetworkInterface::getInportForVnet(int vnet)
 {
     for (auto &iPort : inPorts) {
@@ -592,7 +592,7 @@ NetworkInterface::getInportForVnet(int vnet)
  * support same vnet. Thus, this function returns the first-and
  * only outport which supports the vnet.
  */
-NetworkInterface::OutputPort *
+OutputPort *
 NetworkInterface::getOutportForVnet(int vnet)
 {
     for (auto &oPort : outPorts) {

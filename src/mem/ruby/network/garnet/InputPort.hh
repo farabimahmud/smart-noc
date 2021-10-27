@@ -1,3 +1,6 @@
+#ifndef __MEM_RUBY_NETWORK_GARNET_0_INPUTPORT_HH__
+#define __MEM_RUBY_NETWORK_GARNET_0_INPUTPORT_HH__
+
 #include <cassert>
 #include <cmath>
 
@@ -52,3 +55,5 @@ class InputPort
 }  // namespace garnet
 }  // namespace ruby
 }  // namespace gem5
+
+#endif

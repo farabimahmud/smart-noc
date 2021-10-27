@@ -3,6 +3,8 @@
 #include <cassert>
 #include <cmath>
 
+#include "debug/credit.hh"
+
 namespace gem5 {
 
 namespace ruby {
@@ -34,7 +36,8 @@ namespace garnet {
   }
 
   void InputPort::sendCredit(Credit *cFlit) {
-     DPRINTF(smart, "sending credit flit %s\n", *cFlit);
+     DPRINTF(credit, "[InputPort::sendCredit]"
+     "sending credit flit %s\n", *cFlit);
     _outCreditQueue->insert(cFlit);
   }
 

@@ -35,3 +35,5 @@ slurm-*
 blackscholes
 in_4.txt
 log_file
+runx86.sh
+.vscode/settings.json

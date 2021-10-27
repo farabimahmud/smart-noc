@@ -52,6 +52,8 @@ Source('Credit.cc')
 Source('NetworkBridge.cc')
 Source('SSR.cc')
 Source('CreditLink.cc')
+Source('InputPort.cc')
+Source('OutputPort.cc')
 
 DebugFlag('smart')
 DebugFlag('credit')
