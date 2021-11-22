@@ -55,6 +55,7 @@
 #include "debug/Drain.hh"
 #include "debug/O3CPU.hh"
 #include "debug/Quiesce.hh"
+#include "debug/ReadingPCFile.hh"
 #include "enums/MemoryMode.hh"
 #include "sim/cur_tick.hh"
 #include "sim/full_system.hh"
@@ -121,6 +122,21 @@ CPU::CPU(const O3CPUParams &params)
       lastRunningCycle(curCycle()),
       cpuStats(this)
 {
+    // initialize Special PC List if available
+    if (params.isReadPCListFromFile){
+      isReadPCListFromFile = true;
+      DPRINTF(ReadingPCFile, "Reading PC from File\n");
+      PCListFilename = params.PCListFilename;
+      pclist = new PCList();
+      pclist->readPCListFromFile(PCListFilename);
+      DPRINTF(ReadingPCFile, "Loaded %ld PCs from PCListFile %s\n",
+        pclist->getCount(), pclist->getFileName());
+    }
+    else{
+      DPRINTF(ReadingPCFile, "Not Reading PC from File\n");
+      isReadPCListFromFile = false;
+    }
+
     fatal_if(FullSystem && params.numThreads > 1,
             "SMT is not supported in O3 in full system mode currently.");
 

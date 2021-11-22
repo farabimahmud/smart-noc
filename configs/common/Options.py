@@ -412,6 +412,16 @@ def addCommonOptions(parser):
         "that are present under any of the roots. If not given, dump all "
         "stats. ")
 
+    parser.add_argument(
+      "--read_pc_list_from_file", action="store_true",
+      help="Whether to read PCList from file"
+    )
+
+    parser.add_argument(
+      "--pc_list_filename", default="",
+      help="File to read PC list from"
+    )
+
 
 def addSEOptions(parser):
     # Benchmark options

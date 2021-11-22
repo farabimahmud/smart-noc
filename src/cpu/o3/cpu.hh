@@ -53,6 +53,8 @@
 #include "arch/pcstate.hh"
 #include "base/statistics.hh"
 #include "config/the_isa.hh"
+#include "cpu/activity.hh"
+#include "cpu/base.hh"
 #include "cpu/o3/comm.hh"
 #include "cpu/o3/commit.hh"
 #include "cpu/o3/decode.hh"
@@ -64,9 +66,8 @@
 #include "cpu/o3/rename.hh"
 #include "cpu/o3/rob.hh"
 #include "cpu/o3/scoreboard.hh"
+#include "cpu/o3/special_inst.hh"
 #include "cpu/o3/thread_state.hh"
-#include "cpu/activity.hh"
-#include "cpu/base.hh"
 #include "cpu/simple_thread.hh"
 #include "cpu/timebuf.hh"
 #include "params/O3CPU.hh"
@@ -98,7 +99,9 @@ class CPU : public BaseCPU
     typedef std::list<DynInstPtr>::iterator ListIt;
 
     friend class ThreadContext;
-
+    PCList* pclist;
+    std::string PCListFilename;
+    bool isReadPCListFromFile;
   public:
     enum Status
     {
@@ -167,6 +170,9 @@ class CPU : public BaseCPU
     bool isCpuDrained() const;
 
   public:
+
+    // get PCList pointer
+    PCList* getPCListObj() {return pclist;}
     /** Constructs a CPU with the given parameters. */
     CPU(const O3CPUParams &params);
 

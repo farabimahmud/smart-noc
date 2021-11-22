@@ -452,6 +452,8 @@ def run(options, root, testsys, cpu_class):
 
     np = options.num_cpus
     switch_cpus = None
+    pc_list_filename = options.pc_list_filename
+    read_pc_list_from_file = options.read_pc_list_from_file
 
     if options.prog_interval:
         for i in range(np):
@@ -474,6 +476,9 @@ def run(options, root, testsys, cpu_class):
             switch_cpus[i].progress_interval = \
                 testsys.cpu[i].progress_interval
             switch_cpus[i].isa = testsys.cpu[i].isa
+            switch_cpus[i].isReadPCListFromFile = read_pc_list_from_file
+            switch_cpus[i].PCListFilename = pc_list_filename
+
             # simulation period
             if options.maxinsts:
                 switch_cpus[i].max_insts_any_thread = options.maxinsts
@@ -531,12 +536,14 @@ def run(options, root, testsys, cpu_class):
             repeat_switch_cpu_list = [(testsys.cpu[i], repeat_switch_cpus[i])
                                       for i in range(np)]
 
+    # pc list realated work
     if options.standard_switch:
+        switch_cpus_1 = []
         switch_cpus = [TimingSimpleCPU(switched_out=True, cpu_id=(i))
                        for i in range(np)]
+
         switch_cpus_1 = [DerivO3CPU(switched_out=True, cpu_id=(i))
                         for i in range(np)]
-
         for i in range(np):
             switch_cpus[i].system =  testsys
             switch_cpus_1[i].system =  testsys
@@ -546,6 +553,7 @@ def run(options, root, testsys, cpu_class):
             switch_cpus_1[i].clk_domain = testsys.cpu[i].clk_domain
             switch_cpus[i].isa = testsys.cpu[i].isa
             switch_cpus_1[i].isa = testsys.cpu[i].isa
+
 
             # if restoring, make atomic cpu simulate only a few instructions
             if options.checkpoint_restore != None:

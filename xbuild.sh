@@ -1,3 +1,3 @@
 #!/bin/bash
 
-python3 $(which scons) build/X86_MESI_Two_Level/gem5.opt -j20
+python3 $(which scons) build/X86_MESI_Two_Level/gem5.opt -j12

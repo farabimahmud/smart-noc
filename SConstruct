@@ -145,6 +145,8 @@ main = Environment(tools=[
         ConfigFile, AddLocalRPATH, SwitchingHeaders
     ])
 
+# main.Tool(SCons.Tool.FindTool(['clang'], main))
+# main.Tool(SCons.Tool.FindTool(['clang++'], main))
 main.Tool(SCons.Tool.FindTool(['gcc', 'clang'], main))
 main.Tool(SCons.Tool.FindTool(['g++', 'clang++'], main))
 
@@ -229,6 +231,13 @@ global_vars_file = os.path.join(build_root, 'variables.global')
 
 global_vars = Variables(global_vars_file, args=ARGUMENTS)
 
+## run with gcc
+##    ('CC', 'C compiler', environ.get('CC', main['CC'])),
+##   ('CXX', 'C++ compiler', environ.get('CXX', main['CXX'])),
+
+# ('CC', 'C compiler', 'clang'),
+# ('CXX', 'C++ compiler', 'clang++'),
+
 global_vars.AddVariables(
     ('CC', 'C compiler', environ.get('CC', main['CC'])),
     ('CXX', 'C++ compiler', environ.get('CXX', main['CXX'])),
@@ -246,6 +255,7 @@ global_vars.AddVariables(
     ('EXTRAS', 'Add extra directories to the compilation', '')
     )
 
+print(main['CC'], main['CXX'])
 # Update main environment with values from ARGUMENTS & global_vars_file
 global_vars.Update(main)
 Help('''
@@ -497,6 +507,7 @@ if main['USE_PYTHON']:
                   "CC has the wrong value.\n"
                   "CC = %s" % main['CC'])
         py_version = conf.CheckPythonLib()
+        print("Python Version", py_version)
         if not py_version:
             error("Can't find a working Python installation")
 

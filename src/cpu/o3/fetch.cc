@@ -57,11 +57,13 @@
 #include "cpu/o3/cpu.hh"
 #include "cpu/o3/dyn_inst.hh"
 #include "cpu/o3/limits.hh"
+#include "cpu/o3/special_inst.hh"
 #include "debug/Activity.hh"
 #include "debug/Drain.hh"
 #include "debug/Fetch.hh"
 #include "debug/O3CPU.hh"
 #include "debug/O3PipeView.hh"
+#include "debug/ReadingPCFile.hh"
 #include "mem/packet.hh"
 #include "params/O3CPU.hh"
 #include "sim/byteswap.hh"
@@ -1100,7 +1102,6 @@ Fetch::fetch(bool &status_change)
     // Start actual fetch
     //////////////////////////////////////////
     ThreadID tid = getFetchingThread();
-
     assert(!cpu->switchedOut());
 
     if (tid == InvalidThreadID) {
@@ -1118,6 +1119,41 @@ Fetch::fetch(bool &status_change)
 
     // The current PC.
     TheISA::PCState thisPC = pc[tid];
+
+    /*
+     * Check pc value for special insts
+     */
+    // struct sp_pc_list *pc_struct = read_sp_insts(pcfile);
+    // uint64_t curr_pc = thisPC.instAddr();//inst->pcState().instAddr();
+
+    // uint64_t total_pcs = pc_struct[0].total_lines;
+    // //DPRINTF(Fetch, "%xu\n", curr_pc);
+
+    // for (int i = 0; i < total_pcs; i++)
+    // {
+    //   DPRINTF(ReadingPCFile, "[fetch] curr_pc
+    // %ld pc_struct[i].pc %ld\n", curr_pc, pc_struct[i].pc);
+    //     if (curr_pc == pc_struct[i].pc)
+    //     {
+    //         thisPC.set_Jitter();
+    //         uint8_t jit = thisPC.get_Jitter();
+    //         DPRINTF(ReadingPCFile, "Found the jitter value: %02x\n",
+    // jit & 0xff);
+    //     }
+    // }
+
+    if (cpu->isReadPCListFromFile){
+      uint64_t curr_pc = thisPC.instAddr();
+
+      std::vector<unsigned int> pclist  = cpu->getPCListObj()->getListOfPCs();
+      if (std::find(pclist.begin(), pclist.end(), curr_pc)!= pclist.end()){
+        DPRINTF(ReadingPCFile, "PC %x is in PCList\n", curr_pc);
+        thisPC.set_Jitter();
+        uint8_t jit = thisPC.get_Jitter();
+        DPRINTF(ReadingPCFile, "Found the jitter value: %02x\n", jit & 0xff);
+      }
+    }
+
 
     Addr pcOffset = fetchOffset[tid];
     Addr fetchAddr = (thisPC.instAddr() + pcOffset) & decoder[tid]->pcMask();

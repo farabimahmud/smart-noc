@@ -109,6 +109,17 @@ class PCState : public GenericISA::UPCState<8>
         Base::unserialize(cp);
         UNSERIALIZE_SCALAR(_size);
     }
+
+
+  /** Secure memory operations */
+  uint8_t add_Jitter = 0;
+  // Do we need to treat reg->reg moves and Mem->reg or reg->Mem
+  // Mov instructions differently?
+  void set_Jitter() { add_Jitter = 1; }
+
+  uint8_t get_Jitter() { return add_Jitter; }
+
+
 };
 
 } // namespace X86ISA

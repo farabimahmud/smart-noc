@@ -167,7 +167,6 @@ class BaseCPU : public ClockedObject
     static std::unique_ptr<GlobalStats> globalStats;
 
   public:
-
     /**
      * Purely virtual method that returns a reference to the data
      * port. All subclasses must implement this method.

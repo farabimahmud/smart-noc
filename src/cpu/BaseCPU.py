@@ -167,7 +167,9 @@ class BaseCPU(ClockedObject):
     switched_out = Param.Bool(False,
         "Leave the CPU switched out after startup (used when switching " \
         "between CPU models)")
-
+    isReadPCListFromFile = Param.Bool(False,
+      "Whether load Secure PC List from File")
+    PCListFilename = Param.String("", "PC List File Name")
     tracer = Param.InstTracer(default_tracer, "Instruction tracer")
 
     icache_port = RequestPort("Instruction Port")

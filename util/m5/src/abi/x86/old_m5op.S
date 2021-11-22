@@ -30,10 +30,12 @@
 
 .macro m5op_func, name, func
         .globl \name
+        .func \name
 \name:
         .byte 0x0F, 0x04
         .word \func
         ret
+        .endfunc
 .endm
 
 .text

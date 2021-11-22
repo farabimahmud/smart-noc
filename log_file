@@ -4,48 +4,26 @@ gem5 Simulator System.  http://gem5.org
 gem5 is copyrighted software; use the --copyright option for details.
 
 gem5 version 21.1.0.0
-gem5 compiled Oct 13 2021 14:03:07
-gem5 started Oct 13 2021 14:09:36
-gem5 executing on atlas.engr.tamu.edu, pid 45541
-command line: build/X86_MESI_Two_Level/gem5.opt --debug-file=debug.out --debug-flags=Ruby configs/example/se.py --num-cpus=16 --num-dirs=16 --network=garnet --topology=Mesh_XY --mesh-row=4 --ruby --caches --l2cache --num-l2caches=16 --cpu-type=DerivO3CPU --cmd=/home/grads/f/farabi/benchmarks/parsec-build/blackscholes/bin --maxinsts=1000000 '--options=16 /home/grads/f/farabi/benchmarks/parsec-build/blackscholes/in_4.txt /home/grads/f/farabi/benchmarks/parsec-build/blackscholes/output.out'
+gem5 compiled Nov 22 2021 15:31:45
+gem5 started Nov 22 2021 15:32:59
+gem5 executing on farabi-desktop, pid 161416
+command line: build/X86_MESI_Two_Level/gem5.opt --debug-flags=ReadingPCFile --debug-file=debug.out configs/example/se.py --num-cpus=64 --num-dirs=64 --network=garnet --topology=Mesh_XY --mesh-row=8 --ruby --caches --l2cache --num-l2caches=64 --fast-forward=9223372036854775807 --cpu-type=DerivO3CPU --cmd=pathfinder --read_pc_list_from_file --pc_list_filename=/home/farabi/smart-noc/pcs/pathfinder.txt '--options=100 1 64'
 
-**** REAL SIMULATION ****
+Switch at instruction count:9223372036854775807
+warn: Memory mode will be changed to atomic_noncaching
 build/X86_MESI_Two_Level/sim/simulate.cc:107: info: Entering event queue @ 0.  Starting simulation...
-build/X86_MESI_Two_Level/mem/ruby/system/Sequencer.cc:236: panic: Possible Deadlock detected. Aborting!
- version: 0 request.paddr: 0x4a900 m_readRequestTable: 2 current time: 250000000 issue_time: 0 difference: 250000000
-Memory Usage: 1112392 KBytes
-Program aborted at tick 250000000
---- BEGIN LIBC BACKTRACE ---
-build/X86_MESI_Two_Level/gem5.opt[0x11f1935]
-build/X86_MESI_Two_Level/gem5.opt[0x120e759]
-/lib64/libpthread.so.0(+0xf630)[0x7ff682a94630]
-/lib64/libc.so.6(gsignal+0x37)[0x7ff68130b387]
-/lib64/libc.so.6(abort+0x148)[0x7ff68130ca78]
-build/X86_MESI_Two_Level/gem5.opt[0x61509f]
-build/X86_MESI_Two_Level/gem5.opt[0x114f46c]
-build/X86_MESI_Two_Level/gem5.opt[0x11fe1ce]
-build/X86_MESI_Two_Level/gem5.opt[0x122a329]
-build/X86_MESI_Two_Level/gem5.opt[0x122a98a]
-build/X86_MESI_Two_Level/gem5.opt[0xb7a00b]
-build/X86_MESI_Two_Level/gem5.opt[0xb5803b]
-/lib64/libpython3.6m.so.1.0(PyCFunction_Call+0xa6)[0x7ff682d87a96]
-/lib64/libpython3.6m.so.1.0(_PyEval_EvalFrameDefault+0x68f4)[0x7ff682dedf64]
-/lib64/libpython3.6m.so.1.0(+0x151317)[0x7ff682df2317]
-/lib64/libpython3.6m.so.1.0(+0x151fea)[0x7ff682df2fea]
-/lib64/libpython3.6m.so.1.0(+0x152273)[0x7ff682df3273]
-/lib64/libpython3.6m.so.1.0(_PyEval_EvalFrameDefault+0x3a7)[0x7ff682de7a17]
-/lib64/libpython3.6m.so.1.0(+0x151f3a)[0x7ff682df2f3a]
-/lib64/libpython3.6m.so.1.0(+0x152273)[0x7ff682df3273]
-/lib64/libpython3.6m.so.1.0(_PyEval_EvalFrameDefault+0x3a7)[0x7ff682de7a17]
-/lib64/libpython3.6m.so.1.0(+0x1516d2)[0x7ff682df26d2]
-/lib64/libpython3.6m.so.1.0(+0x151fea)[0x7ff682df2fea]
-/lib64/libpython3.6m.so.1.0(+0x152273)[0x7ff682df3273]
-/lib64/libpython3.6m.so.1.0(_PyEval_EvalFrameDefault+0x3a7)[0x7ff682de7a17]
-/lib64/libpython3.6m.so.1.0(PyEval_EvalCodeEx+0x22d)[0x7ff682df35ed]
-/lib64/libpython3.6m.so.1.0(PyEval_EvalCode+0x3b)[0x7ff682df410b]
-/lib64/libpython3.6m.so.1.0(+0x145a5b)[0x7ff682de6a5b]
-/lib64/libpython3.6m.so.1.0(_PyCFunction_FastCallDict+0x9a)[0x7ff682d8773a]
-/lib64/libpython3.6m.so.1.0(+0x15214f)[0x7ff682df314f]
-/lib64/libpython3.6m.so.1.0(_PyEval_EvalFrameDefault+0x3a7)[0x7ff682de7a17]
-/lib64/libpython3.6m.so.1.0(+0x151317)[0x7ff682df2317]
---- END LIBC BACKTRACE ---
+build/X86_MESI_Two_Level/sim/syscall_emul.cc:73: warn: ignoring syscall set_robust_list(...)
+build/X86_MESI_Two_Level/sim/syscall_emul.cc:84: warn: ignoring syscall rt_sigaction(...)
+      (further warnings will be suppressed)
+build/X86_MESI_Two_Level/sim/syscall_emul.cc:84: warn: ignoring syscall rt_sigprocmask(...)
+      (further warnings will be suppressed)
+build/X86_MESI_Two_Level/sim/mem_state.cc:443: info: Increasing stack size by one page.
+build/X86_MESI_Two_Level/sim/syscall_emul.cc:73: warn: ignoring syscall mprotect(...)
+build/X86_MESI_Two_Level/sim/syscall_emul.cc:73: warn: ignoring syscall mprotect(...)
+5 4 5 7 0 3 0 8 2 2 6 3 8 9 7 5 9 0 6 9 5 0 1 5 9 4 4 3 9 9 0 4 3 7 3 6 0 5 6 4 7 3 9 5 4 9 0 3 9 9 5 4 1 6 9 2 1 6 5 2 5 7 8 0 6 1 8 7 6 5 1 5 0 3 2 4 2 5 8 1 6 5 7 7 3 9 0 6 5 7 8 0 7 8 2 3 1 1 2 9 
+build/X86_MESI_Two_Level/sim/power_state.cc:105: warn: PowerState: Already in the requested power state, request ignored
+Switched CPUS @ tick 117571000
+switching cpus
+**** REAL SIMULATION ****
+build/X86_MESI_Two_Level/sim/simulate.cc:107: info: Entering event queue @ 117571000.  Starting simulation...
+Exiting @ tick 123022500 because exiting with last active thread context
