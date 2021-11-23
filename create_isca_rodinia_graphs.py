@@ -5,7 +5,7 @@ import math
 from pathlib import Path
 
 home_dir        = Path.home()
-run_case        = "rodinia_src_all_dest_all_100"
+run_case        = "test"
 gem5_binary     = "build/X86_MESI_Two_Level/gem5.opt"
 benchmark_dir   = os.path.join(home_dir, "benchmarks/rodinia_3.0/openmp/")
 base_dir        = os.path.abspath(os.getcwd())
@@ -18,12 +18,12 @@ pclist_dir      = os.path.join(base_dir, "pcs")
 
 attack_rate     = [1]
 policy          = ['policy_baseline', 'poilcy_jitter_all', 'policy_camouflage']
-
+policy          = ['policy_baseline']
 debug_flag_lists= ["JitterAllStats"]
 debug_flags     = ','.join(map(str, debug_flag_lists))
 debug_file      = "debug.out"
 
-sim_cycles      = 100000000
+sim_cycles      = 1000000
 max_hpc         = 3
 lower_limit     = 20
 upper_limit     = 80
@@ -59,7 +59,7 @@ list_of_application = [
     'streamcluster',
     ]
 
-list_of_application = ['pathfinder']
+# list_of_application = ['pathfinder']
 
 application_cmd= {
     'kmeans'    : [benchmark_dir+"kmeans/kmeans_openmp/kmeans",
@@ -80,7 +80,7 @@ application_cmd= {
     "100 0.5 502 458 64"],
     'streamcluster' :
         [benchmark_dir+"streamcluster/sc_omp",
-    "10 20 256 65536 65536 1000 none output.txt 64"],
+    "10 20 64 8192 8192 1000 none output.txt 64"],
     'nw'        : [benchmark_dir+"nw/needle",
     "2048 10 64"],
     'particlefilter' :
@@ -107,7 +107,7 @@ application_cmd= {
     "512 512 2 64 "+benchmark_dir+"data/hotspot/temp_512  "
     +benchmark_dir+"data/hotspot/power_512"],
     'myocyte'   :
-        [benchmark_dir+"myocyte.out","100 1 0 64"]
+        [benchmark_dir+"myocyte/myocyte.out","100 1 0 64"]
 }
 
 
@@ -125,6 +125,8 @@ def get_out_dir(dir_name, a,p):
             pass
             # print(Exception)
     return test_case
+
+
 
 
 def get_gem5_command(a, p):
@@ -169,11 +171,17 @@ def get_gem5_command(a, p):
     return s
 
 def create_bash_script():
+    try:
+        os.makedirs(bash_scripts_dir)
+        print("Created dir {}".format(bash_script_dir))
+    except(Exception):
+        pass
+
     for a in list_of_application:
         for p in policy:
             gem5_command = get_gem5_command(a,p)
             bash_script_filename = "{}.sh".format(get_test_case(a,p))
-            get_out_dir(bash_scripts_dir, a,p)
+            # get_out_dir(bash_scripts_dir, a,p)
             bash_script_file = os.path.join(bash_scripts_dir,
                     bash_script_filename)
             print(gem5_command)
@@ -183,7 +191,8 @@ def create_bash_script():
                         file=f)
 
                 print("source ~/.bashrc", file=f)
-                print("mkdir -p {}".format(get_out_dir(bash_scripts_dir, a,p)),
+                print("mkdir -p {}".format(os.path.join(results_dir,
+                    get_test_case(a,p))),
                     file=f)
                 print("{}".format(gem5_command), file=f)
 
