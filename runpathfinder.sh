@@ -1,7 +1,7 @@
 #!/bin/bash
 
 build/X86_MESI_Two_Level/gem5.opt \
-    --debug-flags=ReadingPCFile \
+    --debug-flags=jitter \
     --debug-file=debug.out \
     configs/example/se.py \
     --num-cpus=64 \
@@ -18,6 +18,8 @@ build/X86_MESI_Two_Level/gem5.opt \
     --cmd="pathfinder" \
     --read_pc_list_from_file \
     --pc_list_filename="pcs/pathfinder.txt" \
+    --policy=jitter_all \
+    --target-latency=45 \
     --options="100 1 64"  > log_file 2>&1 
 
 

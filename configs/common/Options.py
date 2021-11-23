@@ -440,8 +440,8 @@ def addCommonOptions(parser):
             packets default is None """)
 
     parser.add_argument("--policy", default="policy_baseline",
-                      choices=['policy_baseline', 'poilcy_jitter_all',
-                        'policy_camouflage'
+                      choices=['baseline', 'jitter_all',
+                        'camouflage'
                           ],
                       help="baseline is without any bypass or jitter")
     parser.add_argument("--target-latency", type=int,

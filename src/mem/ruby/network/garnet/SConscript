@@ -57,3 +57,4 @@ Source('OutputPort.cc')
 
 DebugFlag('smart')
 DebugFlag('credit')
+DebugFlag('jitter')

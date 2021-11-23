@@ -1,37 +1,29 @@
-build/X86_MESI_Two_Level/base/loader/image_file_data.cc:111: panic: panic condition fd < 0 occurred: Failed to open file pathfinder.
-Memory Usage: 313140 KBytes
-Program aborted at tick 0
---- BEGIN LIBC BACKTRACE ---
-build/X86_MESI_Two_Level/gem5.opt[0x11f9f85]
-build/X86_MESI_Two_Level/gem5.opt[0x1216da9]
-/lib64/libpthread.so.0(+0xf630)[0x7efd89a4a630]
-/lib64/libc.so.6(gsignal+0x37)[0x7efd882c1387]
-/lib64/libc.so.6(abort+0x148)[0x7efd882c2a78]
-build/X86_MESI_Two_Level/gem5.opt[0x615e2f]
-build/X86_MESI_Two_Level/gem5.opt[0xafc62f]
-build/X86_MESI_Two_Level/gem5.opt[0xafd39d]
-build/X86_MESI_Two_Level/gem5.opt[0xb7d051]
-build/X86_MESI_Two_Level/gem5.opt[0xb58deb]
-/lib64/libpython3.6m.so.1.0(_PyCFunction_FastCallDict+0x147)[0x7efd89d3d7e7]
-/lib64/libpython3.6m.so.1.0(+0x15214f)[0x7efd89da914f]
-/lib64/libpython3.6m.so.1.0(_PyEval_EvalFrameDefault+0x3a7)[0x7efd89d9da17]
-/lib64/libpython3.6m.so.1.0(+0x1516d2)[0x7efd89da86d2]
-/lib64/libpython3.6m.so.1.0(+0x151fea)[0x7efd89da8fea]
-/lib64/libpython3.6m.so.1.0(+0x152273)[0x7efd89da9273]
-/lib64/libpython3.6m.so.1.0(_PyEval_EvalFrameDefault+0x3a7)[0x7efd89d9da17]
-/lib64/libpython3.6m.so.1.0(+0x151317)[0x7efd89da8317]
-/lib64/libpython3.6m.so.1.0(+0x151fea)[0x7efd89da8fea]
-/lib64/libpython3.6m.so.1.0(+0x152273)[0x7efd89da9273]
-/lib64/libpython3.6m.so.1.0(_PyEval_EvalFrameDefault+0x3a7)[0x7efd89d9da17]
-/lib64/libpython3.6m.so.1.0(PyEval_EvalCodeEx+0x22d)[0x7efd89da95ed]
-/lib64/libpython3.6m.so.1.0(PyEval_EvalCode+0x3b)[0x7efd89daa10b]
-/lib64/libpython3.6m.so.1.0(+0x145a5b)[0x7efd89d9ca5b]
-/lib64/libpython3.6m.so.1.0(_PyCFunction_FastCallDict+0x9a)[0x7efd89d3d73a]
-/lib64/libpython3.6m.so.1.0(+0x15214f)[0x7efd89da914f]
-/lib64/libpython3.6m.so.1.0(_PyEval_EvalFrameDefault+0x3a7)[0x7efd89d9da17]
-/lib64/libpython3.6m.so.1.0(+0x151317)[0x7efd89da8317]
-/lib64/libpython3.6m.so.1.0(+0x151fea)[0x7efd89da8fea]
-/lib64/libpython3.6m.so.1.0(+0x152273)[0x7efd89da9273]
-/lib64/libpython3.6m.so.1.0(_PyEval_EvalFrameDefault+0x3a7)[0x7efd89d9da17]
-/lib64/libpython3.6m.so.1.0(PyEval_EvalCodeEx+0x22d)[0x7efd89da95ed]
---- END LIBC BACKTRACE ---
+Global frequency set at 1000000000000 ticks per second
+0: system.remote_gdb: listening for remote gdb on port 7000
+gem5 Simulator System.  http://gem5.org
+gem5 is copyrighted software; use the --copyright option for details.
+
+gem5 version 21.1.0.0
+gem5 compiled Nov 23 2021 05:54:42
+gem5 started Nov 23 2021 05:59:59
+gem5 executing on farabi-desktop, pid 296834
+command line: build/X86_MESI_Two_Level/gem5.opt --debug-flags=jitter --debug-file=debug.out configs/example/se.py --num-cpus=64 --num-dirs=64 --network=garnet --topology=Mesh_XY --mesh-row=8 --ruby --caches --l2cache --num-l2caches=64 --fast-forward=9223372036854775807 --cpu-type=DerivO3CPU --cmd=pathfinder --read_pc_list_from_file --pc_list_filename=pcs/pathfinder.txt --policy=jitter_all --target-latency=45 '--options=100 1 64'
+
+Switch at instruction count:9223372036854775807
+warn: Memory mode will be changed to atomic_noncaching
+build/X86_MESI_Two_Level/sim/simulate.cc:107: info: Entering event queue @ 0.  Starting simulation...
+build/X86_MESI_Two_Level/sim/syscall_emul.cc:73: warn: ignoring syscall set_robust_list(...)
+build/X86_MESI_Two_Level/sim/syscall_emul.cc:84: warn: ignoring syscall rt_sigaction(...)
+      (further warnings will be suppressed)
+build/X86_MESI_Two_Level/sim/syscall_emul.cc:84: warn: ignoring syscall rt_sigprocmask(...)
+      (further warnings will be suppressed)
+build/X86_MESI_Two_Level/sim/mem_state.cc:443: info: Increasing stack size by one page.
+build/X86_MESI_Two_Level/sim/syscall_emul.cc:73: warn: ignoring syscall mprotect(...)
+build/X86_MESI_Two_Level/sim/syscall_emul.cc:73: warn: ignoring syscall mprotect(...)
+5 4 5 7 0 3 0 8 2 2 6 3 8 9 7 5 9 0 6 9 5 0 1 5 9 4 4 3 9 9 0 4 3 7 3 6 0 5 6 4 7 3 9 5 4 9 0 3 9 9 5 4 1 6 9 2 1 6 5 2 5 7 8 0 6 1 8 7 6 5 1 5 0 3 2 4 2 5 8 1 6 5 7 7 3 9 0 6 5 7 8 0 7 8 2 3 1 1 2 9 
+build/X86_MESI_Two_Level/sim/power_state.cc:105: warn: PowerState: Already in the requested power state, request ignored
+Switched CPUS @ tick 117571000
+switching cpus
+**** REAL SIMULATION ****
+build/X86_MESI_Two_Level/sim/simulate.cc:107: info: Entering event queue @ 117571000.  Starting simulation...
+Exiting @ tick 123022500 because exiting with last active thread context
