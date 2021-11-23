@@ -45,8 +45,8 @@
 #include "mem/ruby/network/garnet/NetworkInterface.hh"
 #include "mem/ruby/network/garnet/NetworkLink.hh"
 #include "mem/ruby/network/garnet/Router.hh"
-#include "mem/ruby/system/RubySystem.hh"
 #include "mem/ruby/network/garnet/SSR.hh"
+#include "mem/ruby/system/RubySystem.hh"
 
 namespace gem5
 {
@@ -104,7 +104,7 @@ GarnetNetwork::GarnetNetwork(const Params &p)
         m_nis.push_back(ni);
         ni->init_net_ptr(this);
     }
-    
+
     // Print Garnet version
     // inform("Garnet version %s\n", garnetVersion);
     m_enable_smart = p.enable_smart;
@@ -115,7 +115,16 @@ GarnetNetwork::GarnetNetwork(const Params &p)
             " and dest bypass %d\n",
             m_smart_hpcmax, m_smart_dest_bypass);
     }
-    
+    if (p.policy_baseline){
+      policy = "baseline";
+    }
+    if (p.policy_camouflage){
+      policy = "camouflage";
+    }
+    if (p.policy_jitter_all){
+      policy = "jitter_all";
+      targetLatency = Cycles(p.target_latency);
+    }
 }
 
 void
@@ -530,12 +539,12 @@ GarnetNetwork::regStats()
 
     //    statistics::Scalar m_total_smart_hops;
     // statistics::Formula m_avg_smart_hops;
-    // statistics::Formula m_avg_hpc; 
+    // statistics::Formula m_avg_hpc;
 
     m_avg_smart_hops.name(name() + ".average_smart_hops");
     m_avg_smart_hops = m_total_smart_hops / sum(m_flits_received);
     m_avg_hpc.name(name()+".average_hpc");
-    m_avg_hpc = m_total_hops/m_total_smart_hops; 
+    m_avg_hpc = m_total_hops/m_total_smart_hops;
 
     // Traffic distribution
     for (int source = 0; source < m_routers.size(); ++source) {
@@ -714,15 +723,15 @@ GarnetNetwork::sendSSR(int src, PortDirection outport_dirn, int req_hops,
         }
         else {
             assert(0);
-        }   
+        }
     }
 
     // insertSSR makes a copy of the SSR for every dest
     delete t_ssr;
 }
 
-void        
-GarnetNetwork::insertSSR(int dst, PortDirection inport_dirn, 
+void
+GarnetNetwork::insertSSR(int dst, PortDirection inport_dirn,
                          int src_hops, bool bypass_req, SSR* orig_ssr)
 {
     SSR *t_ssr = new SSR(orig_ssr->get_vnet(),

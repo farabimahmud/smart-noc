@@ -151,6 +151,7 @@ def init_network(options, network, InterfaceClass):
           network.policy_camouflage = True
         elif (options.policy == "jitter_all"):
           network.policy_jitter_all = True
+          network.target_latency = int(options.target_latency)
         else:
           assert(False,"policy is not Supported at this point")
 

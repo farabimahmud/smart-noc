@@ -66,6 +66,7 @@ class GarnetNetwork(RubyNetwork):
     destination_list = Param.String("", "comma separated list of \
             destinations that the attacker going to use and we have \
             to protect from, Default is None")
+    target_latency = Param.Int(40, "Target Latency, default is 40")
 
 
 class GarnetNetworkInterface(ClockedObject):

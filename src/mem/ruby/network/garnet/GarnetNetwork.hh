@@ -70,6 +70,9 @@ class GarnetNetwork : public Network
     void init();
 
     const char *garnetVersion = "3.0";
+    // Jitter All
+    std::string policy = "baseline";
+    Cycles targetLatency = Cycles(40);
 
     // SMART
     bool isSMART() { return m_enable_smart;}
