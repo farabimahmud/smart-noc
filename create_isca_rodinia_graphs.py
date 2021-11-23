@@ -2,10 +2,12 @@
 
 import os
 import math
+from pathlib import Path
 
+home_dir        = Path.home()
 run_case        = "rodinia_src_all_dest_all_100"
 gem5_binary     = "build/X86_MESI_Two_Level/gem5.opt"
-benchmark_dir   = "/home/grads/f/farabi/benchmarks/rodinia_3.0/openmp"
+benchmark_dir   = os.path.join(home_dir, "benchmarks/rodinia_3.0/openmp/")
 base_dir        = os.path.abspath(os.getcwd())
 results_dir     = os.path.join(base_dir,
         os.path.join("isca_results",run_case))
@@ -15,7 +17,7 @@ config_file     = os.path.join(base_dir, "configs/example/se.py")
 pclist_dir      = os.path.join(base_dir, "pcs")
 
 attack_rate     = [1]
-policy          = ["bypass_none", "jitter_all", "bypass_all_out"]
+policy          = ['policy_baseline', 'poilcy_jitter_all', 'policy_camouflage']
 
 debug_flag_lists= ["JitterAllStats"]
 debug_flags     = ','.join(map(str, debug_flag_lists))
@@ -150,12 +152,12 @@ def get_gem5_command(a, p):
     s += "--l2cache "
     s += "--num-l2caches={} ".format(n_cpus)
     s += "--fast-forward=9223372036854775807 "
-    s += "--bypass={} ".format(p)
+    s += "--policy={} ".format(p)
     s += "--attack-enabled "
     s += "--attack-node={} ".format(attacker_node)
-    s += "--max-hpc={} ".format(max_hpc)
+    # s += "--max-hpc={} ".format(max_hpc)
     # s += "--lower-limit={} ".format(lower_limit)
-    s += "--upper-limit={} ".format(upper_limit)
+    # s += "--upper-limit={} ".format(upper_limit)
     s += "--cmd={} ".format(application_cmd[a][0])
     s += "--options=\"{}\" ".format(application_cmd[a][1])
     s += "--destination-list={} ".format(destination_list[0])

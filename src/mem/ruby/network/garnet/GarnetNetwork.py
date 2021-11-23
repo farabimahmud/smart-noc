@@ -54,6 +54,19 @@ class GarnetNetwork(RubyNetwork):
     fault_model = Param.FaultModel(NULL, "network fault model");
     garnet_deadlock_threshold = Param.UInt32(50000,
                               "network-level deadlock threshold")
+    policy_baseline = Param.Bool(True, "No Bypass or No Jitter")
+    policy_camouflage = Param.Bool(False,
+      "Bypass if distance is more than threshold")
+    policy_jitter_all = Param.Bool(False,
+      "Add Jitter to all loads at destination")
+
+    attack_enabled = Param.Bool(False, "whether attack is enabled in"
+            "this network,default is false")
+    attack_node = Param.Int(-1, "ID of attack node, default -1 no attack node")
+    destination_list = Param.String("", "comma separated list of \
+            destinations that the attacker going to use and we have \
+            to protect from, Default is None")
+
 
 class GarnetNetworkInterface(ClockedObject):
     type = 'GarnetNetworkInterface'

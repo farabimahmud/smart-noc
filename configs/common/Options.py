@@ -411,7 +411,7 @@ def addCommonOptions(parser):
         "once with: system.cpu[:].mmu. If given multiple times, dump stats "
         "that are present under any of the roots. If not given, dump all "
         "stats. ")
-
+    # PC File Related Options
     parser.add_argument(
       "--read_pc_list_from_file", action="store_true",
       help="Whether to read PCList from file"
@@ -422,6 +422,30 @@ def addCommonOptions(parser):
       help="File to read PC list from"
     )
 
+    # attack code related options
+    parser.add_argument("--attack-rate", type=float, default=0.1, metavar="I",
+                    help="Attack rate in packets per cycle per node,\
+                            takes floating point value between 0 to 1 \
+                            default value is 0.1")
+    parser.add_argument("--attack-enabled", action="store_true")
+
+    parser.add_argument("--attack-node", type=str,
+            default=None, action="store",
+            help= """list of destinations that the attacker will try to send
+            packets default is None """)
+
+    parser.add_argument("--destination-list", type=str,
+            default=None, action="store",
+            help= """list of destinations that the attacker will try to send
+            packets default is None """)
+
+    parser.add_argument("--policy", default="policy_baseline",
+                      choices=['policy_baseline', 'poilcy_jitter_all',
+                        'policy_camouflage'
+                          ],
+                      help="baseline is without any bypass or jitter")
+    parser.add_argument("--target-latency", type=int,
+            default=40, help="""target latency we want to achieve""")
 
 def addSEOptions(parser):
     # Benchmark options

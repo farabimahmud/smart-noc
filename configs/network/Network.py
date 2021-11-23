@@ -141,6 +141,19 @@ def init_network(options, network, InterfaceClass):
         network.smart_hpcmax = options.smart_hpcmax
         network.smart_dest_bypass = options.smart_dest_bypass
 
+        network.policy_baseline = False
+        network.policy_camouflage = False
+        network.policy_jitter_all = False
+
+        if (options.policy == "baseline"):
+          network.policy_baseline = True
+        elif (options.policy == "camouflage"):
+          network.policy_camouflage = True
+        elif (options.policy == "jitter_all"):
+          network.policy_jitter_all = True
+        else:
+          assert(False,"policy is not Supported at this point")
+
         # Create Bridges and connect them to the corresponding links
         for intLink in network.int_links:
             intLink.src_net_bridge = NetworkBridge(
