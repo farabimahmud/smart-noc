@@ -17,7 +17,7 @@ build/X86_MESI_Two_Level/gem5.opt \
     --cpu-type=DerivO3CPU \
     --cmd="pathfinder" \
     --read_pc_list_from_file \
-    --pc_list_filename="/home/farabi/smart-noc/pcs/pathfinder.txt" \
+    --pc_list_filename="pcs/pathfinder.txt" \
     --options="100 1 64"  > log_file 2>&1 
 
 
